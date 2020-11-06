@@ -13,29 +13,8 @@ func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
 
-	moonFile, err := os.Open("moon.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	moonRaw, err := png.Decode(moonFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	moon := ebiten.NewImageFromImage(moonRaw)
-
-	earthFile, err := os.Open("earth.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	earthRaw, err := png.Decode(earthFile)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	earth := ebiten.NewImageFromImage(earthRaw)
+	moon := loadImage("moon.png")
+	earth := loadImage("earth.png")
 
 	game := &Game{
 		moon,
@@ -77,4 +56,18 @@ func (g *Game) Draw(screen *ebiten.Image) {
 // Layout is hardcoded for now, may be made dynamic in future
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
 	return 640, 480
+}
+
+func loadImage(name string) *ebiten.Image {
+	file, err := os.Open(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	raw, err := png.Decode(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return ebiten.NewImageFromImage(raw)
 }
