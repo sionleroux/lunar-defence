@@ -24,8 +24,22 @@ func main() {
 	}
 
 	moon := ebiten.NewImageFromImage(moonRaw)
+
+	earthFile, err := os.Open("earth.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	earthRaw, err := png.Decode(earthFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	earth := ebiten.NewImageFromImage(earthRaw)
+
 	game := &Game{
 		moon,
+		earth,
 		0,
 	}
 
@@ -37,6 +51,7 @@ func main() {
 // Game represents the main game state
 type Game struct {
 	moon  *ebiten.Image
+	earth *ebiten.Image
 	moonX int
 }
 
@@ -54,6 +69,7 @@ func (g *Game) Update() error {
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	screen.DrawImage(g.earth, op)
 	op.GeoM.Translate(float64(g.moonX), 0)
 	screen.DrawImage(g.moon, op)
 }
