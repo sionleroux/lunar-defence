@@ -26,6 +26,7 @@ func main() {
 	moon := ebiten.NewImageFromImage(moonRaw)
 	game := &Game{
 		moon,
+		0,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -35,7 +36,8 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	moon *ebiten.Image
+	moon  *ebiten.Image
+	moonX int
 }
 
 // Update calculates game logic
@@ -44,12 +46,16 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
+	g.moonX++
+
 	return nil
 }
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(g.moon, nil)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(g.moonX), 0)
+	screen.DrawImage(g.moon, op)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
