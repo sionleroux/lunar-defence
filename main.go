@@ -16,7 +16,9 @@ func main() {
 	moon := loadImage("moon.png")
 	earth := loadImage("earth.png")
 
+	gameWidth, gameHeight := 1280, 960
 	game := &Game{
+		gameWidth, gameHeight,
 		moon,
 		earth,
 		0,
@@ -29,9 +31,11 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	moon  *ebiten.Image
-	earth *ebiten.Image
-	moonX int
+	width  int
+	height int
+	moonX  int
+	moon   *ebiten.Image
+	earth  *ebiten.Image
 }
 
 // Update calculates game logic
@@ -55,7 +59,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 // Layout is hardcoded for now, may be made dynamic in future
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	return 640, 480
+	return g.width, g.height
 }
 
 func loadImage(name string) *ebiten.Image {
