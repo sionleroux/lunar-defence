@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"image"
 	"image/png"
 	"log"
 	"os"
@@ -22,6 +23,8 @@ func main() {
 		moon,
 		earth,
 		0,
+		0,
+		image.Point{gameWidth / 2, gameHeight / 2},
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -31,11 +34,13 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	width  int
-	height int
-	moonX  int
-	moon   *ebiten.Image
-	earth  *ebiten.Image
+	width   int
+	height  int
+	moon    *ebiten.Image
+	earth   *ebiten.Image
+	moonX   int
+	earthR  int
+	earthXY image.Point
 }
 
 // Update calculates game logic
@@ -45,6 +50,7 @@ func (g *Game) Update() error {
 	}
 
 	g.moonX++
+	g.earthR++
 
 	return nil
 }
@@ -52,7 +58,14 @@ func (g *Game) Update() error {
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(
+		-float64(g.earth.Bounds().Dx()/2),
+		-float64(g.earth.Bounds().Dy()/2),
+	)
+	op.GeoM.Rotate(float64(g.earthR))
+	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
 	screen.DrawImage(g.earth, op)
+	op.GeoM.Reset()
 	op.GeoM.Translate(float64(g.moonX), 0)
 	screen.DrawImage(g.moon, op)
 }
