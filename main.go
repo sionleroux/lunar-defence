@@ -38,8 +38,8 @@ type Game struct {
 	height  int
 	moon    *ebiten.Image
 	earth   *ebiten.Image
-	moonX   int
-	earthR  int
+	moonX   float64
+	earthR  float64
 	earthXY image.Point
 }
 
@@ -50,23 +50,32 @@ func (g *Game) Update() error {
 	}
 
 	g.moonX++
-	g.earthR++
+	g.earthR = g.earthR - 0.02
 
 	return nil
 }
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
+
+	// Position earth
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(
-		-float64(g.earth.Bounds().Dx()/2),
-		-float64(g.earth.Bounds().Dy()/2),
+		-float64(g.earth.Bounds().Dx())/2,
+		-float64(g.earth.Bounds().Dy())/2,
 	)
-	op.GeoM.Rotate(float64(g.earthR))
+	op.GeoM.Rotate(g.earthR)
 	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
 	screen.DrawImage(g.earth, op)
+
+	// Position moon
 	op.GeoM.Reset()
-	op.GeoM.Translate(float64(g.moonX), 0)
+	op.GeoM.Translate(
+		-float64(g.earth.Bounds().Dx())/2-float64(g.moon.Bounds().Dx())*2,
+		-float64(g.earth.Bounds().Dy())/2-float64(g.moon.Bounds().Dy())*2,
+	)
+	op.GeoM.Rotate(g.earthR / 3)
+	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
 	screen.DrawImage(g.moon, op)
 }
 
