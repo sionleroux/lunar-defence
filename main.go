@@ -19,12 +19,14 @@ func main() {
 
 	moon := loadImage("/moon.png")
 	earth := loadImage("/earth.png")
+	asteroid := loadImage("/asteroid.png")
 
 	gameWidth, gameHeight := 1280, 960
 	game := &Game{
 		gameWidth, gameHeight,
 		moon,
 		earth,
+		asteroid,
 		0,
 		0,
 		image.Point{gameWidth / 2, gameHeight / 2},
@@ -37,13 +39,14 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	width   int
-	height  int
-	moon    *ebiten.Image
-	earth   *ebiten.Image
-	moonX   float64
-	earthR  float64
-	earthXY image.Point
+	width    int
+	height   int
+	moon     *ebiten.Image
+	earth    *ebiten.Image
+	asteroid *ebiten.Image
+	moonX    float64
+	earthR   float64
+	earthXY  image.Point
 }
 
 // Update calculates game logic
@@ -80,6 +83,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	op.GeoM.Rotate(g.earthR / 3)
 	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
 	screen.DrawImage(g.moon, op)
+
+	// Position asteroid
+	op.GeoM.Reset()
+	screen.DrawImage(g.asteroid, op)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
