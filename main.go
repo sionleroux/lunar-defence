@@ -1,3 +1,5 @@
+//go:generate statik -src=. -include=*.png
+
 package main
 
 import (
@@ -5,17 +7,18 @@ import (
 	"image"
 	"image/png"
 	"log"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	_ "github.com/jatekalkotok/lunar-defence/statik"
+	"github.com/rakyll/statik/fs"
 )
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
 
-	moon := loadImage("moon.png")
-	earth := loadImage("earth.png")
+	moon := loadImage("/moon.png")
+	earth := loadImage("/earth.png")
 
 	gameWidth, gameHeight := 1280, 960
 	game := &Game{
@@ -85,10 +88,16 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 }
 
 func loadImage(name string) *ebiten.Image {
-	file, err := os.Open(name)
+	statikFs, err := fs.New()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	file, err := statikFs.Open(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
 
 	raw, err := png.Decode(file)
 	if err != nil {
