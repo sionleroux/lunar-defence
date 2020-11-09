@@ -7,6 +7,9 @@ import (
 	"image"
 	"image/png"
 	"log"
+	"math"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "github.com/jatekalkotok/lunar-defence/statik"
@@ -21,6 +24,8 @@ func main() {
 	earth := loadImage("/earth.png")
 	asteroid := loadImage("/asteroid.png")
 
+	rand.Seed(time.Now().UnixNano())
+
 	gameWidth, gameHeight := 1280, 960
 	game := &Game{
 		gameWidth, gameHeight,
@@ -30,6 +35,8 @@ func main() {
 		0,
 		0,
 		image.Point{gameWidth / 2, gameHeight / 2},
+		rand.Float64() * math.Pi * 2,
+		float64(moon.Bounds().Dy()) * 2,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -47,6 +54,8 @@ type Game struct {
 	moonX    float64
 	earthR   float64
 	earthXY  image.Point
+	asteR    float64
+	asteD    float64
 }
 
 // Update calculates game logic
@@ -57,6 +66,7 @@ func (g *Game) Update() error {
 
 	g.moonX++
 	g.earthR = g.earthR - 0.02
+	g.asteD = g.asteD - 1
 
 	return nil
 }
@@ -86,6 +96,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Position asteroid
 	op.GeoM.Reset()
+	op.GeoM.Translate(
+		-float64(g.earth.Bounds().Dx())/2-g.asteD,
+		-float64(g.earth.Bounds().Dy())/2-g.asteD,
+	)
+	op.GeoM.Rotate(g.asteR)
+	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
 	screen.DrawImage(g.asteroid, op)
 }
 
