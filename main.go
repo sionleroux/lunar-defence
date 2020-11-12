@@ -92,13 +92,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Position moon
 	op.GeoM.Reset()
-	op.GeoM.Translate(
+	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
+	opR := &ebiten.DrawImageOptions{}
+	opR.GeoM.Translate(
 		-float64(g.earth.image.Bounds().Dx())/2-float64(g.moon.image.Bounds().Dx())*2,
 		-float64(g.earth.image.Bounds().Dy())/2-float64(g.moon.image.Bounds().Dy())*2,
 	)
-	op.GeoM.Rotate(g.earth.R / 3)
-	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
-	screen.DrawImage(g.moon.image, op)
+	opR.GeoM.Rotate(g.earth.R / 3)
+	opR.GeoM.Concat(op.GeoM)
+	screen.DrawImage(g.moon.image, opR)
 
 	// Position asteroid
 	op.GeoM.Reset()
