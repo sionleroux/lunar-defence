@@ -60,25 +60,6 @@ type Game struct {
 	asteroid *Asteroid
 }
 
-// Moon is moon
-type Moon struct {
-	image *ebiten.Image
-}
-
-// Earth is earth
-type Earth struct {
-	image *ebiten.Image
-	R     float64
-	XY    image.Point
-}
-
-// Asteroid is asteroid
-type Asteroid struct {
-	image *ebiten.Image
-	R     float64
-	D     float64
-}
-
 // Update calculates game logic
 func (g *Game) Update() error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
@@ -133,6 +114,25 @@ func (g *Game) Draw(screen *ebiten.Image) {
 // Layout is hardcoded for now, may be made dynamic in future
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
 	return g.width, g.height
+}
+
+// Moon is moon
+type Moon struct {
+	image *ebiten.Image
+}
+
+// Earth is earth
+type Earth struct {
+	image *ebiten.Image
+	R     float64
+	XY    image.Point
+}
+
+// Asteroid is asteroid
+type Asteroid struct {
+	image *ebiten.Image
+	R     float64
+	D     float64
 }
 
 func loadImage(name string) *ebiten.Image {
