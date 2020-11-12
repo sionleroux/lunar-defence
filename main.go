@@ -85,12 +85,12 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
-	g.earth.R = g.earth.R - 0.02
-
 	// Asteroid collision TODO: it doesn't stop at the right place
 	if g.asteroid.D <= float64(-g.moon.image.Bounds().Dx()*2) {
 		return nil
 	}
+
+	g.earth.R = g.earth.R - 0.02
 	g.asteroid.D = g.asteroid.D - 1
 
 	return nil
