@@ -20,23 +20,31 @@ func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
 
-	moon := loadImage("/moon.png")
-	earth := loadImage("/earth.png")
-	asteroid := loadImage("/asteroid.png")
-
+	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 
-	gameWidth, gameHeight := 1280, 960
+	moon := &Moon{
+		loadImage("/moon.png"),
+		0,
+	}
+
+	earth := &Earth{
+		loadImage("/earth.png"),
+		0,
+		image.Point{gameWidth / 2, gameHeight / 2},
+	}
+
+	asteroid := &Asteroid{
+		loadImage("/asteroid.png"),
+		rand.Float64() * math.Pi * 2,
+		float64(moon.image.Bounds().Dx()) * 2,
+	}
+
 	game := &Game{
 		gameWidth, gameHeight,
 		moon,
 		earth,
 		asteroid,
-		0,
-		0,
-		image.Point{gameWidth / 2, gameHeight / 2},
-		rand.Float64() * math.Pi * 2,
-		float64(moon.Bounds().Dx()) * 2,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -48,14 +56,29 @@ func main() {
 type Game struct {
 	width    int
 	height   int
-	moon     *ebiten.Image
-	earth    *ebiten.Image
-	asteroid *ebiten.Image
-	moonX    float64
-	earthR   float64
-	earthXY  image.Point
-	asteR    float64
-	asteD    float64
+	moon     *Moon
+	earth    *Earth
+	asteroid *Asteroid
+}
+
+// Moon is moon
+type Moon struct {
+	image *ebiten.Image
+	X     float64
+}
+
+// Earth is earth
+type Earth struct {
+	image *ebiten.Image
+	R     float64
+	XY    image.Point
+}
+
+// Asteroid is asteroid
+type Asteroid struct {
+	image *ebiten.Image
+	R     float64
+	D     float64
 }
 
 // Update calculates game logic
@@ -64,14 +87,14 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
-	g.moonX++
-	g.earthR = g.earthR - 0.02
+	g.moon.X++
+	g.earth.R = g.earth.R - 0.02
 
 	// Asteroid collision TODO: it doesn't stop at the right place
-	if g.asteD <= float64(-g.moon.Bounds().Dx()*2) {
+	if g.asteroid.D <= float64(-g.moon.image.Bounds().Dx()*2) {
 		return nil
 	}
-	g.asteD = g.asteD - 1
+	g.asteroid.D = g.asteroid.D - 1
 
 	return nil
 }
@@ -82,32 +105,32 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Position earth
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(
-		-float64(g.earth.Bounds().Dx())/2,
-		-float64(g.earth.Bounds().Dy())/2,
+		-float64(g.earth.image.Bounds().Dx())/2,
+		-float64(g.earth.image.Bounds().Dy())/2,
 	)
-	op.GeoM.Rotate(g.earthR)
-	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
-	screen.DrawImage(g.earth, op)
+	op.GeoM.Rotate(g.earth.R)
+	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
+	screen.DrawImage(g.earth.image, op)
 
 	// Position moon
 	op.GeoM.Reset()
 	op.GeoM.Translate(
-		-float64(g.earth.Bounds().Dx())/2-float64(g.moon.Bounds().Dx())*2,
-		-float64(g.earth.Bounds().Dy())/2-float64(g.moon.Bounds().Dy())*2,
+		-float64(g.earth.image.Bounds().Dx())/2-float64(g.moon.image.Bounds().Dx())*2,
+		-float64(g.earth.image.Bounds().Dy())/2-float64(g.moon.image.Bounds().Dy())*2,
 	)
-	op.GeoM.Rotate(g.earthR / 3)
-	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
-	screen.DrawImage(g.moon, op)
+	op.GeoM.Rotate(g.earth.R / 3)
+	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
+	screen.DrawImage(g.moon.image, op)
 
 	// Position asteroid
 	op.GeoM.Reset()
 	op.GeoM.Translate(
-		-float64(g.earth.Bounds().Dx())/2-g.asteD,
-		-float64(g.earth.Bounds().Dy())/2-g.asteD,
+		-float64(g.earth.image.Bounds().Dx())/2-g.asteroid.D,
+		-float64(g.earth.image.Bounds().Dy())/2-g.asteroid.D,
 	)
-	op.GeoM.Rotate(g.asteR)
-	op.GeoM.Translate(float64(g.earthXY.X), float64(g.earthXY.Y))
-	screen.DrawImage(g.asteroid, op)
+	op.GeoM.Rotate(g.asteroid.R)
+	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
+	screen.DrawImage(g.asteroid.image, op)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
