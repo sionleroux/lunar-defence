@@ -25,7 +25,6 @@ func main() {
 
 	moon := &Moon{
 		loadImage("/moon.png"),
-		0,
 	}
 
 	earth := &Earth{
@@ -64,7 +63,6 @@ type Game struct {
 // Moon is moon
 type Moon struct {
 	image *ebiten.Image
-	X     float64
 }
 
 // Earth is earth
@@ -87,7 +85,6 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
-	g.moon.X++
 	g.earth.R = g.earth.R - 0.02
 
 	// Asteroid collision TODO: it doesn't stop at the right place
