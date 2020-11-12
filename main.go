@@ -36,7 +36,7 @@ func main() {
 		0,
 		image.Point{gameWidth / 2, gameHeight / 2},
 		rand.Float64() * math.Pi * 2,
-		float64(moon.Bounds().Dy()) * 2,
+		float64(moon.Bounds().Dx()) * 2,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -66,6 +66,11 @@ func (g *Game) Update() error {
 
 	g.moonX++
 	g.earthR = g.earthR - 0.02
+
+	// Asteroid collision TODO: it doesn't stop at the right place
+	if g.asteD <= float64(-g.moon.Bounds().Dx()*2) {
+		return nil
+	}
 	g.asteD = g.asteD - 1
 
 	return nil
