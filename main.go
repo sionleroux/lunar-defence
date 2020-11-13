@@ -25,6 +25,7 @@ func main() {
 
 	moon := &Moon{
 		loadImage("/moon.png"),
+		&ebiten.DrawImageOptions{},
 	}
 
 	earth := &Earth{
@@ -90,17 +91,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
 	screen.DrawImage(g.earth.image, op)
 
-	// Position moon
-	op.GeoM.Reset()
-	op.GeoM.Translate(float64(g.earth.XY.X), float64(g.earth.XY.Y))
-	opR := &ebiten.DrawImageOptions{}
-	opR.GeoM.Translate(
-		-float64(g.earth.image.Bounds().Dx())/2-float64(g.moon.image.Bounds().Dx())*2,
-		-float64(g.earth.image.Bounds().Dy())/2-float64(g.moon.image.Bounds().Dy())*2,
-	)
-	opR.GeoM.Rotate(g.earth.R / 3)
-	opR.GeoM.Concat(op.GeoM)
-	screen.DrawImage(g.moon.image, opR)
+	g.moon.Update(g.earth)
+	screen.DrawImage(g.moon.image, g.moon.op)
 
 	// Position asteroid
 	op.GeoM.Reset()
@@ -121,6 +113,18 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 // Moon is moon
 type Moon struct {
 	image *ebiten.Image
+	op    *ebiten.DrawImageOptions
+}
+
+// Update recalculates moon position
+func (m Moon) Update(e *Earth) {
+	m.op.GeoM.Reset()
+	m.op.GeoM.Translate(
+		-float64(e.image.Bounds().Dx())/2-float64(m.image.Bounds().Dx())*2,
+		-float64(e.image.Bounds().Dy())/2-float64(m.image.Bounds().Dy())*2,
+	)
+	m.op.GeoM.Rotate(e.R / 3)
+	m.op.GeoM.Translate(float64(e.XY.X), float64(e.XY.Y))
 }
 
 // Earth is earth
