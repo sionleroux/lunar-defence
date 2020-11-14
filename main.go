@@ -60,11 +60,11 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	width    int
-	height   int
-	moon     *Moon
-	earth    *Earth
-	asteroid *Asteroid
+	Width    int
+	Height   int
+	Moon     *Moon
+	Earth    *Earth
+	Asteroid *Asteroid
 }
 
 // Update calculates game logic
@@ -74,31 +74,31 @@ func (g *Game) Update() error {
 	}
 
 	// Asteroid collision TODO: it doesn't stop at the right place
-	if g.asteroid.Distance <= float64(-g.moon.Radius*2) {
+	if g.Asteroid.Distance <= float64(-g.Moon.Radius*2) {
 		return nil
 	}
 
-	g.earth.Rotation = g.earth.Rotation - 0.02
-	g.asteroid.Distance = g.asteroid.Distance - 1
+	g.Earth.Rotation = g.Earth.Rotation - 0.02
+	g.Asteroid.Distance = g.Asteroid.Distance - 1
 
 	return nil
 }
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.earth.Update()
-	screen.DrawImage(g.earth.Image, g.earth.Op)
+	g.Earth.Update()
+	screen.DrawImage(g.Earth.Image, g.Earth.Op)
 
-	g.moon.Update(g.earth)
-	screen.DrawImage(g.moon.Image, g.moon.Op)
+	g.Moon.Update(g.Earth)
+	screen.DrawImage(g.Moon.Image, g.Moon.Op)
 
-	g.asteroid.Update(g.earth)
-	screen.DrawImage(g.asteroid.Image, g.asteroid.Op)
+	g.Asteroid.Update(g.Earth)
+	screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
-	return g.width, g.height
+	return g.Width, g.Height
 }
 
 // Moon is moon
