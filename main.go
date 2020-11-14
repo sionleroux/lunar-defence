@@ -25,32 +25,33 @@ func main() {
 
 	moonImage := loadImage("/moon.png")
 	moon := &Moon{
-		moonImage,
-		&ebiten.DrawImageOptions{},
-		float64(moonImage.Bounds().Dx()),
+		Image:  moonImage,
+		Op:     &ebiten.DrawImageOptions{},
+		Radius: float64(moonImage.Bounds().Dx()),
 	}
 
 	earthImage := loadImage("/earth.png")
 	earth := &Earth{
-		earthImage,
-		&ebiten.DrawImageOptions{},
-		float64(earthImage.Bounds().Dx()),
-		0,
-		image.Point{gameWidth / 2, gameHeight / 2},
+		Image:    earthImage,
+		Op:       &ebiten.DrawImageOptions{},
+		Radius:   float64(earthImage.Bounds().Dx()),
+		Rotation: 0,
+		Center:   image.Point{gameWidth / 2, gameHeight / 2},
 	}
 
 	asteroid := &Asteroid{
-		loadImage("/asteroid.png"),
-		&ebiten.DrawImageOptions{},
-		rand.Float64() * math.Pi * 2,
-		moon.Radius * 2,
+		Image:    loadImage("/asteroid.png"),
+		Op:       &ebiten.DrawImageOptions{},
+		Rotation: rand.Float64() * math.Pi * 2,
+		Distance: moon.Radius * 2,
 	}
 
 	game := &Game{
-		gameWidth, gameHeight,
-		moon,
-		earth,
-		asteroid,
+		Width:    gameWidth,
+		Height:   gameHeight,
+		Moon:     moon,
+		Earth:    earth,
+		Asteroid: asteroid,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
