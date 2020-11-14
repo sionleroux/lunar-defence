@@ -27,14 +27,14 @@ func main() {
 	moon := &Moon{
 		Image:  moonImage,
 		Op:     &ebiten.DrawImageOptions{},
-		Radius: float64(moonImage.Bounds().Dx()),
+		Radius: float64(moonImage.Bounds().Dx()) / 2,
 	}
 
 	earthImage := loadImage("/earth.png")
 	earth := &Earth{
 		Image:    earthImage,
 		Op:       &ebiten.DrawImageOptions{},
-		Radius:   float64(earthImage.Bounds().Dx()),
+		Radius:   float64(earthImage.Bounds().Dx()) / 2,
 		Rotation: 0,
 		Center:   image.Point{gameWidth / 2, gameHeight / 2},
 	}
@@ -113,8 +113,8 @@ type Moon struct {
 func (o Moon) Update(earth *Earth) {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
-		-earth.Radius/2-o.Radius*2,
-		-earth.Radius/2-o.Radius*2,
+		-earth.Radius-o.Radius*2,
+		-earth.Radius-o.Radius*2,
 	)
 	o.Op.GeoM.Rotate(earth.Rotation / 3)
 	o.Op.GeoM.Translate(earth.Pt())
@@ -133,8 +133,8 @@ type Earth struct {
 func (o Earth) Update() {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
-		-o.Radius/2,
-		-o.Radius/2,
+		-o.Radius,
+		-o.Radius,
 	)
 	o.Op.GeoM.Rotate(o.Rotation)
 	o.Op.GeoM.Translate(o.Pt())
@@ -157,8 +157,8 @@ type Asteroid struct {
 func (o Asteroid) Update(earth *Earth) {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
-		-earth.Radius/2-o.Distance,
-		-earth.Radius/2-o.Distance,
+		-earth.Radius-o.Distance,
+		-earth.Radius-o.Distance,
 	)
 	o.Op.GeoM.Rotate(o.Rotation)
 	o.Op.GeoM.Translate(earth.Pt())
