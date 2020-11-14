@@ -116,7 +116,7 @@ func (o Moon) Update(earth *Earth) {
 		-earth.Radius/2-o.Radius*2,
 	)
 	o.Op.GeoM.Rotate(earth.Rotation / 3)
-	o.Op.GeoM.Translate(float64(earth.Center.X), float64(earth.Center.Y))
+	o.Op.GeoM.Translate(earth.Pt())
 }
 
 // Earth is earth
@@ -136,7 +136,12 @@ func (o Earth) Update() {
 		-o.Radius/2,
 	)
 	o.Op.GeoM.Rotate(o.Rotation)
-	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
+	o.Op.GeoM.Translate(o.Pt())
+}
+
+// Pt is a shortcut for the Earth's X and Y coordinates
+func (o Earth) Pt() (X, Y float64) {
+	return float64(o.Center.X), float64(o.Center.Y)
 }
 
 // Asteroid is asteroid
@@ -155,7 +160,7 @@ func (o Asteroid) Update(earth *Earth) {
 		-earth.Radius/2-o.Distance,
 	)
 	o.Op.GeoM.Rotate(o.Rotation)
-	o.Op.GeoM.Translate(float64(earth.Center.X), float64(earth.Center.Y))
+	o.Op.GeoM.Translate(earth.Pt())
 }
 
 func loadImage(name string) *ebiten.Image {
