@@ -43,7 +43,7 @@ func main() {
 		loadImage("/asteroid.png"),
 		&ebiten.DrawImageOptions{},
 		rand.Float64() * math.Pi * 2,
-		moon.radius * 2,
+		moon.Radius * 2,
 	}
 
 	game := &Game{
@@ -74,12 +74,12 @@ func (g *Game) Update() error {
 	}
 
 	// Asteroid collision TODO: it doesn't stop at the right place
-	if g.asteroid.D <= float64(-g.moon.radius*2) {
+	if g.asteroid.Distance <= float64(-g.moon.Radius*2) {
 		return nil
 	}
 
-	g.earth.R = g.earth.R - 0.02
-	g.asteroid.D = g.asteroid.D - 1
+	g.earth.Rotation = g.earth.Rotation - 0.02
+	g.asteroid.Distance = g.asteroid.Distance - 1
 
 	return nil
 }
@@ -87,13 +87,13 @@ func (g *Game) Update() error {
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.earth.Update()
-	screen.DrawImage(g.earth.image, g.earth.op)
+	screen.DrawImage(g.earth.Image, g.earth.Op)
 
 	g.moon.Update(g.earth)
-	screen.DrawImage(g.moon.image, g.moon.op)
+	screen.DrawImage(g.moon.Image, g.moon.Op)
 
 	g.asteroid.Update(g.earth)
-	screen.DrawImage(g.asteroid.image, g.asteroid.op)
+	screen.DrawImage(g.asteroid.Image, g.asteroid.Op)
 }
 
 // Layout is hardcoded for now, may be made dynamic in future
@@ -103,59 +103,59 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 
 // Moon is moon
 type Moon struct {
-	image  *ebiten.Image
-	op     *ebiten.DrawImageOptions
-	radius float64
+	Image  *ebiten.Image
+	Op     *ebiten.DrawImageOptions
+	Radius float64
 }
 
 // Update recalculates moon position
-func (o Moon) Update(e *Earth) {
-	o.op.GeoM.Reset()
-	o.op.GeoM.Translate(
-		-e.Radius/2-o.radius*2,
-		-e.Radius/2-o.radius*2,
+func (o Moon) Update(earth *Earth) {
+	o.Op.GeoM.Reset()
+	o.Op.GeoM.Translate(
+		-earth.Radius/2-o.Radius*2,
+		-earth.Radius/2-o.Radius*2,
 	)
-	o.op.GeoM.Rotate(e.R / 3)
-	o.op.GeoM.Translate(float64(e.XY.X), float64(e.XY.Y))
+	o.Op.GeoM.Rotate(earth.Rotation / 3)
+	o.Op.GeoM.Translate(float64(earth.Center.X), float64(earth.Center.Y))
 }
 
 // Earth is earth
 type Earth struct {
-	image  *ebiten.Image
-	op     *ebiten.DrawImageOptions
-	Radius float64
-	R      float64
-	XY     image.Point
+	Image    *ebiten.Image
+	Op       *ebiten.DrawImageOptions
+	Radius   float64
+	Rotation float64
+	Center   image.Point
 }
 
 // Update repositions Earth
 func (o Earth) Update() {
-	o.op.GeoM.Reset()
-	o.op.GeoM.Translate(
+	o.Op.GeoM.Reset()
+	o.Op.GeoM.Translate(
 		-o.Radius/2,
 		-o.Radius/2,
 	)
-	o.op.GeoM.Rotate(o.R)
-	o.op.GeoM.Translate(float64(o.XY.X), float64(o.XY.Y))
+	o.Op.GeoM.Rotate(o.Rotation)
+	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 }
 
 // Asteroid is asteroid
 type Asteroid struct {
-	image *ebiten.Image
-	op    *ebiten.DrawImageOptions
-	R     float64
-	D     float64
+	Image    *ebiten.Image
+	Op       *ebiten.DrawImageOptions
+	Rotation float64
+	Distance float64
 }
 
 // Update recalculates Asteroid position
-func (o Asteroid) Update(e *Earth) {
-	o.op.GeoM.Reset()
-	o.op.GeoM.Translate(
-		-e.Radius/2-o.D,
-		-e.Radius/2-o.D,
+func (o Asteroid) Update(earth *Earth) {
+	o.Op.GeoM.Reset()
+	o.Op.GeoM.Translate(
+		-earth.Radius/2-o.Distance,
+		-earth.Radius/2-o.Distance,
 	)
-	o.op.GeoM.Rotate(o.R)
-	o.op.GeoM.Translate(float64(e.XY.X), float64(e.XY.Y))
+	o.Op.GeoM.Rotate(o.Rotation)
+	o.Op.GeoM.Translate(float64(earth.Center.X), float64(earth.Center.Y))
 }
 
 func loadImage(name string) *ebiten.Image {
