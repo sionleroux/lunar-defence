@@ -23,14 +23,18 @@ func main() {
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 
+	moonImage := loadImage("/moon.png")
 	moon := &Moon{
-		loadImage("/moon.png"),
+		moonImage,
 		&ebiten.DrawImageOptions{},
+		float64(moonImage.Bounds().Dx()),
 	}
 
+	earthImage := loadImage("/earth.png")
 	earth := &Earth{
-		loadImage("/earth.png"),
+		earthImage,
 		&ebiten.DrawImageOptions{},
+		float64(earthImage.Bounds().Dx()),
 		0,
 		image.Point{gameWidth / 2, gameHeight / 2},
 	}
@@ -39,7 +43,7 @@ func main() {
 		loadImage("/asteroid.png"),
 		&ebiten.DrawImageOptions{},
 		rand.Float64() * math.Pi * 2,
-		float64(moon.image.Bounds().Dx()) * 2,
+		moon.radius * 2,
 	}
 
 	game := &Game{
@@ -70,7 +74,7 @@ func (g *Game) Update() error {
 	}
 
 	// Asteroid collision TODO: it doesn't stop at the right place
-	if g.asteroid.D <= float64(-g.moon.image.Bounds().Dx()*2) {
+	if g.asteroid.D <= float64(-g.moon.radius*2) {
 		return nil
 	}
 
@@ -99,16 +103,17 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 
 // Moon is moon
 type Moon struct {
-	image *ebiten.Image
-	op    *ebiten.DrawImageOptions
+	image  *ebiten.Image
+	op     *ebiten.DrawImageOptions
+	radius float64
 }
 
 // Update recalculates moon position
 func (o Moon) Update(e *Earth) {
 	o.op.GeoM.Reset()
 	o.op.GeoM.Translate(
-		-float64(e.image.Bounds().Dx())/2-float64(o.image.Bounds().Dx())*2,
-		-float64(e.image.Bounds().Dy())/2-float64(o.image.Bounds().Dy())*2,
+		-e.Radius/2-o.radius*2,
+		-e.Radius/2-o.radius*2,
 	)
 	o.op.GeoM.Rotate(e.R / 3)
 	o.op.GeoM.Translate(float64(e.XY.X), float64(e.XY.Y))
@@ -116,18 +121,19 @@ func (o Moon) Update(e *Earth) {
 
 // Earth is earth
 type Earth struct {
-	image *ebiten.Image
-	op    *ebiten.DrawImageOptions
-	R     float64
-	XY    image.Point
+	image  *ebiten.Image
+	op     *ebiten.DrawImageOptions
+	Radius float64
+	R      float64
+	XY     image.Point
 }
 
 // Update repositions Earth
 func (o Earth) Update() {
 	o.op.GeoM.Reset()
 	o.op.GeoM.Translate(
-		-float64(o.image.Bounds().Dx())/2,
-		-float64(o.image.Bounds().Dy())/2,
+		-o.Radius/2,
+		-o.Radius/2,
 	)
 	o.op.GeoM.Rotate(o.R)
 	o.op.GeoM.Translate(float64(o.XY.X), float64(o.XY.Y))
@@ -145,8 +151,8 @@ type Asteroid struct {
 func (o Asteroid) Update(e *Earth) {
 	o.op.GeoM.Reset()
 	o.op.GeoM.Translate(
-		-float64(e.image.Bounds().Dx())/2-o.D,
-		-float64(e.image.Bounds().Dy())/2-o.D,
+		-e.Radius/2-o.D,
+		-e.Radius/2-o.D,
 	)
 	o.op.GeoM.Rotate(o.R)
 	o.op.GeoM.Translate(float64(e.XY.X), float64(e.XY.Y))
