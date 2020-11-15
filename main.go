@@ -47,7 +47,7 @@ func main() {
 		Image:    asteroidImage,
 		Op:       &ebiten.DrawImageOptions{},
 		Radius:   float64(asteroidImage.Bounds().Dx()) / 2,
-		Rotation: rand.Float64() * math.Pi * 2,
+		Angle:    rand.Float64() * math.Pi * 2,
 		Distance: earth.Radius * 2,
 	}
 
@@ -156,7 +156,7 @@ type Asteroid struct {
 	Image    *ebiten.Image
 	Op       *ebiten.DrawImageOptions
 	Radius   float64
-	Rotation float64
+	Angle    float64
 	Distance float64
 }
 
@@ -167,7 +167,7 @@ func (o Asteroid) Update(earth *Earth) {
 		-earth.Radius+o.Radius*2-o.Distance,
 		-earth.Radius+o.Radius*2-o.Distance,
 	)
-	o.Op.GeoM.Rotate(o.Rotation)
+	o.Op.GeoM.Rotate(o.Angle)
 	o.Op.GeoM.Translate(earth.Pt())
 }
 
