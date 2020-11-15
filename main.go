@@ -1,4 +1,4 @@
-//go:generate statik -src=. -include=*.png
+//go:generate statik -src=./assets -include=*.png
 
 package main
 
