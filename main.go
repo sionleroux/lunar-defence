@@ -33,11 +33,10 @@ func main() {
 
 	earthImage := loadImage("/earth.png")
 	earth := &Earth{
-		Image:    earthImage,
-		Op:       &ebiten.DrawImageOptions{},
-		Radius:   float64(earthImage.Bounds().Dx()) / 2,
-		Rotation: 0,
-		Center:   image.Point{gameWidth / 2, gameHeight / 2},
+		Image:  earthImage,
+		Op:     &ebiten.DrawImageOptions{},
+		Radius: float64(earthImage.Bounds().Dx()) / 2,
+		Center: image.Point{gameWidth / 2, gameHeight / 2},
 	}
 
 	asteroidImage := loadImage("/asteroid.png")
@@ -59,6 +58,7 @@ func main() {
 	game := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
+		Rotation:  0,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroid:  asteroid,
@@ -74,6 +74,7 @@ func main() {
 type Game struct {
 	Width     int
 	Height    int
+	Rotation  float64
 	Moon      *Moon
 	Earth     *Earth
 	Asteroid  *Asteroid
@@ -90,12 +91,12 @@ func (g *Game) Update() error {
 		return nil
 	}
 
-	g.Earth.Rotation = g.Earth.Rotation - 0.02
+	g.Rotation = g.Rotation - 0.02
 	g.Asteroid.Distance = g.Asteroid.Distance - 1
 
 	// Update object positions
-	g.Earth.Update()
-	g.Moon.Update(g.Earth)
+	g.Earth.Update(g)
+	g.Moon.Update(g)
 	g.Asteroid.Update(g.Earth)
 	g.Crosshair.Update()
 
@@ -124,33 +125,32 @@ type Moon struct {
 }
 
 // Update recalculates moon position
-func (o Moon) Update(earth *Earth) {
+func (o Moon) Update(g *Game) {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
-		-earth.Radius-o.Radius*2,
-		-earth.Radius-o.Radius*2,
+		-g.Earth.Radius-o.Radius*2,
+		-g.Earth.Radius-o.Radius*2,
 	)
-	o.Op.GeoM.Rotate(earth.Rotation / 3)
-	o.Op.GeoM.Translate(earth.Pt())
+	o.Op.GeoM.Rotate(g.Rotation / 3)
+	o.Op.GeoM.Translate(g.Earth.Pt())
 }
 
 // Earth is earth
 type Earth struct {
-	Image    *ebiten.Image
-	Op       *ebiten.DrawImageOptions
-	Radius   float64
-	Rotation float64
-	Center   image.Point
+	Image  *ebiten.Image
+	Op     *ebiten.DrawImageOptions
+	Radius float64
+	Center image.Point
 }
 
 // Update repositions Earth
-func (o Earth) Update() {
+func (o Earth) Update(g *Game) {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
 		-o.Radius,
 		-o.Radius,
 	)
-	o.Op.GeoM.Rotate(o.Rotation)
+	o.Op.GeoM.Rotate(g.Rotation)
 	o.Op.GeoM.Translate(o.Pt())
 }
 
