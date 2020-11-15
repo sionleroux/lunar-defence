@@ -97,7 +97,7 @@ func (g *Game) Update() error {
 	// Update object positions
 	g.Earth.Update(g)
 	g.Moon.Update(g)
-	g.Asteroid.Update(g.Earth)
+	g.Asteroid.Update(g)
 	g.Crosshair.Update()
 
 	return nil
@@ -169,14 +169,28 @@ type Asteroid struct {
 }
 
 // Update recalculates Asteroid position
-func (o Asteroid) Update(earth *Earth) {
+func (o Asteroid) Update(g *Game) {
+	const RotationSpeed float64 = 3
 	o.Op.GeoM.Reset()
+
+	// Spin the asteroid
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+	o.Op.GeoM.Rotate(g.Rotation * RotationSpeed)
+
+	// Move it back to where it was because maths is hard
+	o.Op.GeoM.Translate(o.Radius, o.Radius)
+
+	// Positions it at correct distance for angle correction
 	o.Op.GeoM.Translate(
-		-earth.Radius+o.Radius*2-o.Distance,
-		-earth.Radius+o.Radius*2-o.Distance,
+		-g.Earth.Radius+o.Radius*2-o.Distance,
+		-g.Earth.Radius+o.Radius*2-o.Distance,
 	)
+
+	// Turn to correct angle
 	o.Op.GeoM.Rotate(o.Angle)
-	o.Op.GeoM.Translate(earth.Pt())
+
+	// Move post-rotation centre to match Earth's centre
+	o.Op.GeoM.Translate(g.Earth.Pt())
 }
 
 // The Crosshair is a target showing where the the player will shoot
