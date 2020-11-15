@@ -93,21 +93,20 @@ func (g *Game) Update() error {
 	g.Earth.Rotation = g.Earth.Rotation - 0.02
 	g.Asteroid.Distance = g.Asteroid.Distance - 1
 
+	// Update object positions
+	g.Earth.Update()
+	g.Moon.Update(g.Earth)
+	g.Asteroid.Update(g.Earth)
+	g.Crosshair.Update()
+
 	return nil
 }
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Earth.Update()
 	screen.DrawImage(g.Earth.Image, g.Earth.Op)
-
-	g.Moon.Update(g.Earth)
 	screen.DrawImage(g.Moon.Image, g.Moon.Op)
-
-	g.Asteroid.Update(g.Earth)
 	screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
-
-	g.Crosshair.Update()
 	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
 	// debug(screen, g)
 }
