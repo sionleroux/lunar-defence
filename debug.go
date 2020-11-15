@@ -54,3 +54,9 @@ func debug(screen *ebiten.Image, g *Game) {
 		math.Sqrt(math.Pow(float64(mdx), 2)+math.Pow(float64(mdy), 2)),
 	))
 }
+
+func fps(screen *ebiten.Image) {
+	ebitenutil.DebugPrint(screen,
+		fmt.Sprintf("FPS: %.0f, Tick: %.0f\n", ebiten.CurrentFPS(), ebiten.CurrentTPS()),
+	)
+}
