@@ -19,6 +19,7 @@ import (
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
+	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
