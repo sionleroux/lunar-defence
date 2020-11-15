@@ -48,12 +48,20 @@ func main() {
 		Distance: earth.Radius * 2,
 	}
 
+	crosshairImage := loadImage("/crosshair.png")
+	crosshair := &Crosshair{
+		Image:  crosshairImage,
+		Op:     &ebiten.DrawImageOptions{},
+		Radius: float64(crosshairImage.Bounds().Dx()) / 2,
+	}
+
 	game := &Game{
-		Width:    gameWidth,
-		Height:   gameHeight,
-		Moon:     moon,
-		Earth:    earth,
-		Asteroid: asteroid,
+		Width:     gameWidth,
+		Height:    gameHeight,
+		Moon:      moon,
+		Earth:     earth,
+		Asteroid:  asteroid,
+		Crosshair: crosshair,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -63,11 +71,12 @@ func main() {
 
 // Game represents the main game state
 type Game struct {
-	Width    int
-	Height   int
-	Moon     *Moon
-	Earth    *Earth
-	Asteroid *Asteroid
+	Width     int
+	Height    int
+	Moon      *Moon
+	Earth     *Earth
+	Asteroid  *Asteroid
+	Crosshair *Crosshair
 }
 
 // Update calculates game logic
@@ -97,6 +106,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.Asteroid.Update(g.Earth)
 	screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
 
+	g.Crosshair.Update()
+	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
 	// debug(screen, g)
 }
 
@@ -166,6 +177,23 @@ func (o Asteroid) Update(earth *Earth) {
 	)
 	o.Op.GeoM.Rotate(o.Angle)
 	o.Op.GeoM.Translate(earth.Pt())
+}
+
+// The Crosshair is a target showing where the the player will shoot
+type Crosshair struct {
+	Image  *ebiten.Image
+	Op     *ebiten.DrawImageOptions
+	Radius float64
+}
+
+// Update recalculates the crosshair position
+func (o Crosshair) Update() {
+	o.Op.GeoM.Reset()
+	mx, my := ebiten.CursorPosition()
+	o.Op.GeoM.Translate(
+		float64(mx)-o.Radius,
+		float64(my)-o.Radius,
+	)
 }
 
 func loadImage(name string) *ebiten.Image {

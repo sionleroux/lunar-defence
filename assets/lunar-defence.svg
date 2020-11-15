@@ -13,7 +13,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
-   sodipodi:docname="moon.svg">
+   sodipodi:docname="lunar-defence.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -24,17 +24,25 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.92803119"
-     inkscape:cx="-175.89046"
-     inkscape:cy="461.55668"
+     inkscape:cx="-5.396974"
+     inkscape:cy="1020.8051"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
-     inkscape:window-width="1252"
+     inkscape:window-width="1433"
      inkscape:window-height="943"
-     inkscape:window-x="44"
-     inkscape:window-y="23"
-     inkscape:window-maximized="0" />
+     inkscape:window-x="197"
+     inkscape:window-y="35"
+     inkscape:window-maximized="0"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-object-midpoints="true"
+     inkscape:snap-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid905" />
+  </sodipodi:namedview>
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -167,6 +175,37 @@
          inkscape:export-filename="/Users/sion/asteroid.png"
          inkscape:export-xdpi="30"
          inkscape:export-ydpi="30" />
+    </g>
+    <g
+       id="g922"
+       inkscape:export-filename="/Users/sion/crosshair.png"
+       inkscape:export-xdpi="30"
+       inkscape:export-ydpi="30">
+      <circle
+         style="fill:none;stroke:#ff5555;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path10-0"
+         cx="1.9957114"
+         cy="298.21646"
+         r="35.151787"
+         inkscape:export-filename="/Users/sion/moon.png"
+         inkscape:export-xdpi="30.145876"
+         inkscape:export-ydpi="30.145876" />
+      <path
+         style="fill:none;stroke:#ff5555;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m -46.591324,298.21646 h 28.199396"
+         id="path903" />
+      <path
+         style="fill:none;stroke:#ff5555;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 22.383352,298.21646 H 50.582748"
+         id="path911" />
+      <path
+         style="fill:none;stroke:#ff5555;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 1.9957123,277.82883 v -28.1994"
+         id="path913" />
+      <path
+         style="fill:none;stroke:#ff5555;stroke-width:3;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="M 1.9957123,346.8035 V 318.6041"
+         id="path915" />
     </g>
   </g>
 </svg>
