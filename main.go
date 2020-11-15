@@ -42,11 +42,13 @@ func main() {
 		Center:   image.Point{gameWidth / 2, gameHeight / 2},
 	}
 
+	asteroidImage := loadImage("/asteroid.png")
 	asteroid := &Asteroid{
-		Image:    loadImage("/asteroid.png"),
+		Image:    asteroidImage,
 		Op:       &ebiten.DrawImageOptions{},
+		Radius:   float64(asteroidImage.Bounds().Dx()) / 2,
 		Rotation: rand.Float64() * math.Pi * 2,
-		Distance: moon.Radius * 2,
+		Distance: earth.Radius * 2,
 	}
 
 	game := &Game{
@@ -77,8 +79,7 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
-	// Asteroid collision TODO: it doesn't stop at the right place
-	if g.Asteroid.Distance <= float64(-g.Moon.Radius*2) {
+	if g.Asteroid.Distance <= 0 {
 		return nil
 	}
 
@@ -154,6 +155,7 @@ func (o Earth) Pt() (X, Y float64) {
 type Asteroid struct {
 	Image    *ebiten.Image
 	Op       *ebiten.DrawImageOptions
+	Radius   float64
 	Rotation float64
 	Distance float64
 }
@@ -162,8 +164,8 @@ type Asteroid struct {
 func (o Asteroid) Update(earth *Earth) {
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(
-		-earth.Radius-o.Distance,
-		-earth.Radius-o.Distance,
+		-earth.Radius+o.Radius*2-o.Distance,
+		-earth.Radius+o.Radius*2-o.Distance,
 	)
 	o.Op.GeoM.Rotate(o.Rotation)
 	o.Op.GeoM.Translate(earth.Pt())
