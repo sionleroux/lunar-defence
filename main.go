@@ -222,9 +222,9 @@ type Explosion struct {
 
 // Update sets positioning and animation for Explosions
 func (o *Explosion) Update(g *Game) {
-	radius := 87.0 // frameWidth
 	o.Op.GeoM.Reset()
-	o.Op.GeoM.Translate(-radius, -radius)
+	o.Op.GeoM.Translate(-g.Earth.Radius, -g.Earth.Radius)
+	o.Op.GeoM.Rotate(g.Asteroid.Angle)
 	o.Op.GeoM.Translate(g.Earth.Pt())
 
 	if g.Exploding {
