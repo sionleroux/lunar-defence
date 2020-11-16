@@ -24,41 +24,24 @@ func main() {
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 
-	moonImage := loadImage("/moon.png")
-	moon := &Moon{
-		Image:  moonImage,
-		Op:     &ebiten.DrawImageOptions{},
-		Radius: float64(moonImage.Bounds().Dx()) / 2,
-	}
+	moon := &Moon{Object: NewObject("/moon.png")}
 
-	earthImage := loadImage("/earth.png")
 	earth := &Earth{
-		Image:  earthImage,
-		Op:     &ebiten.DrawImageOptions{},
-		Radius: float64(earthImage.Bounds().Dx()) / 2,
+		Object: NewObject(("/earth.png")),
 		Center: image.Point{gameWidth / 2, gameHeight / 2},
 	}
 
-	asteroidImage := loadImage("/asteroid.png")
 	asteroid := &Asteroid{
-		Image:    asteroidImage,
-		Op:       &ebiten.DrawImageOptions{},
-		Radius:   float64(asteroidImage.Bounds().Dx()) / 2,
+		Object:   NewObject(("/asteroid.png")),
 		Angle:    rand.Float64() * math.Pi * 2,
 		Distance: earth.Radius * 2,
 	}
 
-	crosshairImage := loadImage("/crosshair.png")
-	crosshair := &Crosshair{
-		Image:  crosshairImage,
-		Op:     &ebiten.DrawImageOptions{},
-		Radius: float64(crosshairImage.Bounds().Dx()) / 2,
-	}
+	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
 
 	explosion := &Explosion{
-		Image: loadImage("/explosion.png"),
-		Op:    &ebiten.DrawImageOptions{},
-		Frame: 1,
+		Object: NewObject("/explosion.png"),
+		Frame:  1,
 	}
 
 	game := &Game{
@@ -137,11 +120,27 @@ func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, scr
 	return g.Width, g.Height
 }
 
-// Moon is moon
-type Moon struct {
+// An Object is something that can be seen and positioned in the game
+type Object struct {
 	Image  *ebiten.Image
 	Op     *ebiten.DrawImageOptions
 	Radius float64
+}
+
+// NewObject makes a new game Object with fields calculated from the input image
+// after laoding it from the statikFS
+func NewObject(filename string) *Object {
+	image := loadImage(filename)
+	return &Object{
+		Image:  image,
+		Op:     &ebiten.DrawImageOptions{},
+		Radius: float64(image.Bounds().Dx()) / 2,
+	}
+}
+
+// Moon is moon
+type Moon struct {
+	*Object
 }
 
 // Update recalculates moon position
@@ -157,9 +156,7 @@ func (o Moon) Update(g *Game) {
 
 // Earth is earth
 type Earth struct {
-	Image  *ebiten.Image
-	Op     *ebiten.DrawImageOptions
-	Radius float64
+	*Object
 	Center image.Point
 }
 
@@ -181,9 +178,7 @@ func (o Earth) Pt() (X, Y float64) {
 
 // Asteroid is asteroid
 type Asteroid struct {
-	Image    *ebiten.Image
-	Op       *ebiten.DrawImageOptions
-	Radius   float64
+	*Object
 	Angle    float64
 	Distance float64
 }
@@ -215,8 +210,7 @@ func (o Asteroid) Update(g *Game) {
 
 // An Explosion is an animated impact explosion
 type Explosion struct {
-	Image *ebiten.Image
-	Op    *ebiten.DrawImageOptions
+	*Object
 	Frame int
 }
 
@@ -238,8 +232,7 @@ func (o *Explosion) Update(g *Game) {
 
 // The Crosshair is a target showing where the the player will shoot
 type Crosshair struct {
-	Image  *ebiten.Image
-	Op     *ebiten.DrawImageOptions
+	*Object
 	Radius float64
 }
 
