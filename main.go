@@ -256,18 +256,18 @@ func (o Crosshair) Update() {
 func loadImage(name string) *ebiten.Image {
 	statikFs, err := fs.New()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error initialising statikFS: %v\n", err)
 	}
 
 	file, err := statikFs.Open(name)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error opening file %s: %v\n", name, err)
 	}
 	defer file.Close()
 
 	raw, err := png.Decode(file)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error decoding file %s as PNG: %v\n", name, err)
 	}
 
 	return ebiten.NewImageFromImage(raw)
