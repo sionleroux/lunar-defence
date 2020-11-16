@@ -55,14 +55,22 @@ func main() {
 		Radius: float64(crosshairImage.Bounds().Dx()) / 2,
 	}
 
+	explosion := &Explosion{
+		Image: loadImage("/explosion.png"),
+		Op:    &ebiten.DrawImageOptions{},
+		Frame: 1,
+	}
+
 	game := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
 		Rotation:  0,
+		Exploding: false,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroid:  asteroid,
 		Crosshair: crosshair,
+		Explosion: explosion,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -75,10 +83,12 @@ type Game struct {
 	Width     int
 	Height    int
 	Rotation  float64
+	Exploding bool
 	Moon      *Moon
 	Earth     *Earth
 	Asteroid  *Asteroid
 	Crosshair *Crosshair
+	Explosion *Explosion
 }
 
 // Update calculates game logic
@@ -87,18 +97,19 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
-	if g.Asteroid.Distance <= 0 {
-		return nil
+	if g.Asteroid.Distance > 0 {
+		g.Asteroid.Distance = g.Asteroid.Distance - 1
+		g.Rotation = g.Rotation - 0.02
+	} else {
+		g.Exploding = true
 	}
-
-	g.Rotation = g.Rotation - 0.02
-	g.Asteroid.Distance = g.Asteroid.Distance - 1
 
 	// Update object positions
 	g.Earth.Update(g)
 	g.Moon.Update(g)
 	g.Asteroid.Update(g)
 	g.Crosshair.Update()
+	g.Explosion.Update(g)
 
 	return nil
 }
@@ -109,6 +120,15 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.Moon.Image, g.Moon.Op)
 	screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
 	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
+	if g.Exploding {
+		frameWidth := 87
+		screen.DrawImage(g.Explosion.Image.SubImage(image.Rect(
+			g.Explosion.Frame*frameWidth,
+			0,
+			(1+g.Explosion.Frame)*frameWidth,
+			frameWidth,
+		)).(*ebiten.Image), g.Explosion.Op)
+	}
 	// debug(screen, g)
 }
 
@@ -191,6 +211,29 @@ func (o Asteroid) Update(g *Game) {
 
 	// Move post-rotation centre to match Earth's centre
 	o.Op.GeoM.Translate(g.Earth.Pt())
+}
+
+// An Explosion is an animated impact explosion
+type Explosion struct {
+	Image *ebiten.Image
+	Op    *ebiten.DrawImageOptions
+	Frame int
+}
+
+// Update sets positioning and animation for Explosions
+func (o *Explosion) Update(g *Game) {
+	radius := 87.0 // frameWidth
+	o.Op.GeoM.Reset()
+	o.Op.GeoM.Translate(-radius, -radius)
+	o.Op.GeoM.Translate(g.Earth.Pt())
+
+	if g.Exploding {
+		if o.Frame < 7 {
+			o.Frame++
+		} else {
+			g.Exploding = false
+		}
+	}
 }
 
 // The Crosshair is a target showing where the the player will shoot

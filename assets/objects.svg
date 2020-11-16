@@ -7,13 +7,13 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="301.6622mm"
+   height="509.73596mm"
+   viewBox="0 0 301.6622 509.73596"
    version="1.1"
    id="svg8"
-   inkscape:version="1.0.1 (c497b03c, 2020-09-10)"
-   sodipodi:docname="lunar-defence.svg">
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="objects.svg">
   <defs
      id="defs2" />
   <sodipodi:namedview
@@ -24,24 +24,30 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.92803119"
-     inkscape:cx="-5.396974"
-     inkscape:cy="1020.8051"
+     inkscape:cx="686.54377"
+     inkscape:cy="1113.7195"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1433"
      inkscape:window-height="943"
-     inkscape:window-x="197"
-     inkscape:window-y="35"
+     inkscape:window-x="26"
+     inkscape:window-y="23"
      inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-object-midpoints="true"
-     inkscape:snap-midpoints="true">
+     inkscape:snap-midpoints="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0">
     <inkscape:grid
        type="xygrid"
-       id="grid905" />
+       id="grid905"
+       originx="183.07598"
+       originy="161.43245" />
   </sodipodi:namedview>
   <metadata
      id="metadata5">
@@ -51,14 +57,15 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1">
+     id="layer1"
+     transform="translate(183.07599,161.43245)">
     <g
        id="g857"
        transform="translate(1.4255088,30.220787)">
@@ -159,8 +166,8 @@
        id="g855">
       <path
          id="circle940"
-         style="fill:#ba6939;stroke:#4f322f;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1;stroke-opacity:1"
-         d="M -335.31836 629.32812 A 43.498172 43.498169 0 0 0 -352.01562 632.70703 A 20.062362 20.062369 0 0 1 -351.20898 638.33594 A 20.062362 20.062369 0 0 1 -371.27148 658.39844 A 20.062362 20.062369 0 0 1 -376.0332 657.82227 A 43.498172 43.498169 0 0 0 -378.70508 672.82617 A 43.498172 43.498169 0 0 0 -363.54883 705.82227 A 20.062411 20.062397 77.605092 0 1 -354 700.73828 A 20.062411 20.062397 77.605092 0 1 -330.09961 716.02344 A 43.498172 43.498169 0 0 0 -291.70898 672.82617 A 43.498172 43.498169 0 0 0 -294.62305 657.17578 A 26.514564 26.764303 56.873156 0 1 -315.22461 645.25977 A 26.514564 26.764303 56.873156 0 1 -319.46289 632.2793 A 43.498172 43.498169 0 0 0 -335.20703 629.32812 A 43.498172 43.498169 0 0 0 -335.31836 629.32812 z "
+         style="fill:#ba6939;fill-opacity:1;stroke:#4f322f;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m -335.31836,629.32812 a 43.498172,43.498169 0 0 0 -16.69726,3.37891 20.062362,20.062369 0 0 1 0.80664,5.62891 20.062362,20.062369 0 0 1 -20.0625,20.0625 20.062362,20.062369 0 0 1 -4.76172,-0.57617 43.498172,43.498169 0 0 0 -2.67188,15.0039 43.498172,43.498169 0 0 0 15.15625,32.9961 20.062411,20.062397 77.605092 0 1 9.54883,-5.08399 20.062411,20.062397 77.605092 0 1 23.90039,15.28516 43.498172,43.498169 0 0 0 38.39063,-43.19727 43.498172,43.498169 0 0 0 -2.91407,-15.65039 26.514564,26.764303 56.873156 0 1 -20.60156,-11.91601 26.514564,26.764303 56.873156 0 1 -4.23828,-12.98047 43.498172,43.498169 0 0 0 -15.74414,-2.95118 43.498172,43.498169 0 0 0 -0.11133,0 z"
          transform="scale(0.26458333)"
          inkscape:export-filename="/Users/sion/asteroid.png"
          inkscape:export-xdpi="30"
