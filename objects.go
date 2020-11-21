@@ -136,6 +136,8 @@ func (o Crosshair) Update() {
 }
 
 func loadImage(name string) *ebiten.Image {
+	log.Printf("loading %s\n", name)
+
 	statikFs, err := fs.New()
 	if err != nil {
 		log.Fatalf("error initialising statikFS: %v\n", err)
