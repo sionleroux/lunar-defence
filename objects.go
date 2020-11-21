@@ -123,7 +123,6 @@ func (o *Explosion) Update(g *Game) {
 // The Crosshair is a target showing where the the player will shoot
 type Crosshair struct {
 	*Object
-	Radius float64
 }
 
 // Update recalculates the crosshair position
