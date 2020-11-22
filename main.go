@@ -88,7 +88,7 @@ func (g *Game) Update() error {
 	g.Earth.Update(g)
 	g.Moon.Update(g)
 	g.Asteroid.Update(g)
-	g.Crosshair.Update()
+	g.Crosshair.Update(g)
 	g.Explosion.Update(g)
 
 	return nil

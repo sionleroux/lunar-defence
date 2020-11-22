@@ -19,6 +19,24 @@ func debug(screen *ebiten.Image, g *Game) {
 		color.RGBA{255, 255, 0, 255},
 	)
 
+	ebitenutil.DrawRect(
+		screen,
+		float64(g.Crosshair.Center.X-20),
+		float64(g.Crosshair.Center.Y-20),
+		40,
+		40,
+		color.RGBA{0, 255, 0, 255},
+	)
+
+	ebitenutil.DrawRect(
+		screen,
+		float64(g.Asteroid.Center.X-5),
+		float64(g.Asteroid.Center.Y-5),
+		10,
+		10,
+		color.RGBA{255, 255, 0, 255},
+	)
+
 	ebitenutil.DrawLine(
 		screen,
 		float64(g.Earth.Center.X),

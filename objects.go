@@ -4,6 +4,7 @@ import (
 	"image"
 	"image/png"
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "github.com/jatekalkotok/lunar-defence/statik"
@@ -14,17 +15,29 @@ import (
 type Object struct {
 	Image  *ebiten.Image
 	Op     *ebiten.DrawImageOptions
+	Center image.Point
 	Radius float64
+}
+
+// Overlaps reports whether o and p have a non-empty intersection
+func (o Object) Overlaps(p *Object) bool {
+	diff := o.Center.Sub(p.Center)
+	distance := math.Sqrt(math.Pow(float64(diff.X), 2) + math.Pow(float64(diff.Y), 2))
+	if distance <= o.Radius+p.Radius {
+		return true
+	}
+	return false
 }
 
 // NewObject makes a new game Object with fields calculated from the input image
 // after laoding it from the statikFS
 func NewObject(filename string) *Object {
-	image := loadImage(filename)
+	img := loadImage(filename)
 	return &Object{
-		Image:  image,
+		Image:  img,
 		Op:     &ebiten.DrawImageOptions{},
-		Radius: float64(image.Bounds().Dx()) / 2,
+		Center: image.Pt(0, 0),
+		Radius: float64(img.Bounds().Dx()) / 2,
 	}
 }
 
@@ -81,21 +94,22 @@ func (o Asteroid) Update(g *Game) {
 	// Spin the asteroid
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 	o.Op.GeoM.Rotate(g.Rotation * RotationSpeed)
-
-	// Move it back to where it was because maths is hard
 	o.Op.GeoM.Translate(o.Radius, o.Radius)
 
-	// Positions it at correct distance for angle correction
-	o.Op.GeoM.Translate(
-		-g.Earth.Radius+o.Radius*2-o.Distance,
-		-g.Earth.Radius+o.Radius*2-o.Distance,
+	// Calculated centre for collision detection
+	t := o.Angle
+	d := o.Distance + g.Earth.Radius
+	x := (d) * math.Cos(t)
+	y := (d) * math.Sin(t)
+	o.Center = image.Pt(
+		int(x)+g.Width/2,
+		int(y)+g.Height/2,
 	)
 
-	// Turn to correct angle
-	o.Op.GeoM.Rotate(o.Angle)
+	// Move to newly calculated x, y with image offset to center
+	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
-	// Move post-rotation centre to match Earth's centre
-	o.Op.GeoM.Translate(g.Earth.Pt())
 }
 
 // An Explosion is an animated impact explosion
@@ -126,13 +140,17 @@ type Crosshair struct {
 }
 
 // Update recalculates the crosshair position
-func (o Crosshair) Update() {
+func (o *Crosshair) Update(g *Game) {
 	o.Op.GeoM.Reset()
-	mx, my := ebiten.CursorPosition()
+	o.Center = image.Pt(ebiten.CursorPosition())
 	o.Op.GeoM.Translate(
-		float64(mx)-o.Radius,
-		float64(my)-o.Radius,
+		float64(o.Center.X)-o.Radius,
+		float64(o.Center.Y)-o.Radius,
 	)
+	if o.Overlaps(g.Asteroid.Object) {
+		log.Println("target acquired!")
+		// TODO: add logic here
+	}
 }
 
 func loadImage(name string) *ebiten.Image {
