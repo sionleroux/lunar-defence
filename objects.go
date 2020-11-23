@@ -120,10 +120,10 @@ type Explosion struct {
 
 // Update sets positioning and animation for Explosions
 func (o *Explosion) Update(g *Game) {
+	o.Center.X, o.Center.Y = g.Asteroid.Center.X, g.Asteroid.Center.Y
 	o.Op.GeoM.Reset()
-	o.Op.GeoM.Translate(-g.Earth.Radius, -g.Earth.Radius)
-	o.Op.GeoM.Rotate(g.Asteroid.Angle)
-	o.Op.GeoM.Translate(g.Earth.Pt())
+	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
 	if g.Exploding {
 		if o.Frame < 7 {

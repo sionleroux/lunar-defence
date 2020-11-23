@@ -40,6 +40,7 @@ func main() {
 		Object: NewObject("/explosion.png"),
 		Frame:  1,
 	}
+	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
 	game := &Game{
 		Width:     gameWidth,
