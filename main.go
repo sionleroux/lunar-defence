@@ -13,6 +13,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+var debugMode bool = false
+
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
@@ -138,7 +140,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.GameOver {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
-	// debug(screen, g)
+
+	if debugMode {
+		debug(screen, g)
+	}
 }
 
 // Layout is hardcoded for now, may be made dynamic in future

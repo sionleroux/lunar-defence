@@ -1,3 +1,5 @@
+// +build debug
+
 package main
 
 import (
@@ -8,6 +10,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+func init() {
+	debugMode = true
+}
 
 func debug(screen *ebiten.Image, g *Game) {
 	ebitenutil.DrawRect(
