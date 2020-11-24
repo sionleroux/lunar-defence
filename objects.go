@@ -126,12 +126,14 @@ func (o Asteroid) Update(g *Game) {
 	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
+	o.Explosion.Update(g)
 }
 
 // Draw renders a Asteroid to the screen
 func (o *Asteroid) Draw(screen *ebiten.Image) {
 	if o.Alive {
 		screen.DrawImage(o.Image, o.Op)
+		o.Explosion.Draw(screen)
 	}
 }
 

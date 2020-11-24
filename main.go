@@ -66,7 +66,6 @@ func main() {
 			moon,
 			earth,
 			asteroid,
-			asteroid.Explosion,
 			crosshair,
 		},
 	}
