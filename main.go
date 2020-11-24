@@ -24,23 +24,27 @@ func main() {
 	moon := &Moon{Object: NewObject("/moon.png")}
 
 	earth := &Earth{
-		Object: NewObject(("/earth.png")),
-		Center: image.Point{gameWidth / 2, gameHeight / 2},
+		Object:   NewObject(("/earth.png")),
+		Center:   image.Point{gameWidth / 2, gameHeight / 2},
+		Impacted: false,
 	}
 
+	explosion := &Explosion{
+		Object:    NewObject("/explosion.png"),
+		Frame:     1,
+		Exploding: false,
+	}
+	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
+
 	asteroid := &Asteroid{
-		Object:   NewObject(("/asteroid.png")),
-		Angle:    rand.Float64() * math.Pi * 2,
-		Distance: earth.Radius * 2,
+		Object:    NewObject(("/asteroid.png")),
+		Angle:     rand.Float64() * math.Pi * 2,
+		Distance:  earth.Radius * 2,
+		Explosion: explosion,
+		Alive:     true,
 	}
 
 	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
-
-	explosion := &Explosion{
-		Object: NewObject("/explosion.png"),
-		Frame:  1,
-	}
-	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
@@ -51,16 +55,12 @@ func main() {
 	game := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
+		GameOver:  false,
 		Rotation:  0,
-		Exploding: false,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroid:  asteroid,
-		AAlive:    true,
-		Impacted:  false,
-		GameOver:  false,
 		Crosshair: crosshair,
-		Explosion: explosion,
 		GOText:    gotext,
 	}
 
@@ -74,15 +74,11 @@ type Game struct {
 	Width     int
 	Height    int
 	Rotation  float64
-	Exploding bool
 	Moon      *Moon
 	Earth     *Earth
 	Asteroid  *Asteroid
-	AAlive    bool
-	Impacted  bool
 	GameOver  bool
 	Crosshair *Crosshair
-	Explosion *Explosion
 	GOText    *Object
 }
 
@@ -93,7 +89,7 @@ func (g *Game) Update() error {
 	}
 
 	// Game over
-	if g.Impacted && !g.AAlive {
+	if g.Earth.Impacted && !g.Asteroid.Alive {
 		g.GameOver = true
 	}
 
@@ -101,39 +97,39 @@ func (g *Game) Update() error {
 	if g.Asteroid.Distance > 0 {
 		g.Asteroid.Distance = g.Asteroid.Distance - 1
 		g.Rotation = g.Rotation - 0.02
-	} else if g.AAlive {
-		g.Impacted = true
-		g.Exploding = true
+	} else if g.Asteroid.Alive {
+		g.Earth.Impacted = true
+		g.Asteroid.Explosion.Exploding = true
 	}
 
 	// Update object positions
 	g.Earth.Update(g)
 	g.Moon.Update(g)
 	g.Asteroid.Update(g)
+	g.Asteroid.Explosion.Update(g)
 	g.Crosshair.Update(g)
-	g.Explosion.Update(g)
 
 	return nil
 }
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	if !g.Impacted {
+	if !g.Earth.Impacted {
 		screen.DrawImage(g.Earth.Image, g.Earth.Op)
 	}
 	screen.DrawImage(g.Moon.Image, g.Moon.Op)
-	if g.AAlive {
+	if g.Asteroid.Alive {
 		screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
 	}
 	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
-	if g.Exploding {
+	if g.Asteroid.Explosion.Exploding {
 		frameWidth := 87
-		screen.DrawImage(g.Explosion.Image.SubImage(image.Rect(
-			g.Explosion.Frame*frameWidth,
+		screen.DrawImage(g.Asteroid.Explosion.Image.SubImage(image.Rect(
+			g.Asteroid.Explosion.Frame*frameWidth,
 			0,
-			(1+g.Explosion.Frame)*frameWidth,
+			(1+g.Asteroid.Explosion.Frame)*frameWidth,
 			frameWidth,
-		)).(*ebiten.Image), g.Explosion.Op)
+		)).(*ebiten.Image), g.Asteroid.Explosion.Op)
 	}
 	if g.GameOver {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)

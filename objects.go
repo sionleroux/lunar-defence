@@ -61,7 +61,8 @@ func (o Moon) Update(g *Game) {
 // Earth is earth
 type Earth struct {
 	*Object
-	Center image.Point
+	Center   image.Point
+	Impacted bool
 }
 
 // Update repositions Earth
@@ -83,8 +84,10 @@ func (o Earth) Pt() (X, Y float64) {
 // Asteroid is asteroid
 type Asteroid struct {
 	*Object
-	Angle    float64
-	Distance float64
+	Angle     float64
+	Distance  float64
+	Explosion *Explosion
+	Alive     bool
 }
 
 // Update recalculates Asteroid position
@@ -116,7 +119,8 @@ func (o Asteroid) Update(g *Game) {
 // An Explosion is an animated impact explosion
 type Explosion struct {
 	*Object
-	Frame int
+	Frame     int
+	Exploding bool
 }
 
 // Update sets positioning and animation for Explosions
@@ -126,12 +130,12 @@ func (o *Explosion) Update(g *Game) {
 	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
-	if g.Exploding {
+	if o.Exploding {
 		if o.Frame < 7 {
 			o.Frame++
 		} else {
-			g.Exploding = false
-			g.AAlive = false
+			o.Exploding = false
+			g.Asteroid.Alive = false
 		}
 	}
 }
@@ -149,8 +153,8 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.X)-o.Radius,
 		float64(o.Center.Y)-o.Radius,
 	)
-	if clicked() && o.Overlaps(g.Asteroid.Object) && g.AAlive {
-		g.Exploding = true
+	if clicked() && o.Overlaps(g.Asteroid.Object) && g.Asteroid.Alive {
+		g.Asteroid.Explosion.Exploding = true
 	}
 }
 
