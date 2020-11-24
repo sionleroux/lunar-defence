@@ -42,7 +42,7 @@ func NewObject(filename string) *Object {
 	}
 }
 
-// Moon is moon
+// Moon is our moon, orbiting around the earth
 type Moon struct {
 	*Object
 }
@@ -58,7 +58,12 @@ func (o Moon) Update(g *Game) {
 	o.Op.GeoM.Translate(g.Earth.Pt())
 }
 
-// Earth is earth
+// Draw renders a Moon to the screen
+func (o *Moon) Draw(screen *ebiten.Image) {
+	screen.DrawImage(o.Image, o.Op)
+}
+
+// Earth is the earth, our home planet
 type Earth struct {
 	*Object
 	Center   image.Point
@@ -76,12 +81,19 @@ func (o Earth) Update(g *Game) {
 	o.Op.GeoM.Translate(o.Pt())
 }
 
+// Draw renders a Earth to the screen
+func (o *Earth) Draw(screen *ebiten.Image) {
+	if !o.Impacted {
+		screen.DrawImage(o.Image, o.Op)
+	}
+}
+
 // Pt is a shortcut for the Earth's X and Y coordinates
 func (o Earth) Pt() (X, Y float64) {
 	return float64(o.Center.X), float64(o.Center.Y)
 }
 
-// Asteroid is asteroid
+// Asteroid is an asteroid on impact course with the Earth
 type Asteroid struct {
 	*Object
 	Angle     float64
@@ -116,6 +128,13 @@ func (o Asteroid) Update(g *Game) {
 
 }
 
+// Draw renders a Asteroid to the screen
+func (o *Asteroid) Draw(screen *ebiten.Image) {
+	if o.Alive {
+		screen.DrawImage(o.Image, o.Op)
+	}
+}
+
 // An Explosion is an animated impact explosion
 type Explosion struct {
 	*Object
@@ -140,6 +159,17 @@ func (o *Explosion) Update(g *Game) {
 	}
 }
 
+// Draw renders an Explosion to the screen
+func (o *Explosion) Draw(screen *ebiten.Image) {
+	const frameSize int = 87
+	if o.Exploding {
+		screen.DrawImage(o.Image.SubImage(image.Rect(
+			o.Frame*frameSize, 0, // top-left
+			(1+o.Frame)*frameSize, frameSize, // bottom-right
+		)).(*ebiten.Image), o.Op)
+	}
+}
+
 // The Crosshair is a target showing where the the player will shoot
 type Crosshair struct {
 	*Object
@@ -158,10 +188,17 @@ func (o *Crosshair) Update(g *Game) {
 	}
 }
 
+// Draw renders a Crosshair to the screen
+func (o *Crosshair) Draw(screen *ebiten.Image) {
+	screen.DrawImage(o.Image, o.Op)
+}
+
+// Shorthand for when the left mouse button has just been clicked
 func clicked() bool {
 	return inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 }
 
+// Load an image from statikFS into an ebiten Image object
 func loadImage(name string) *ebiten.Image {
 	log.Printf("loading %s\n", name)
 

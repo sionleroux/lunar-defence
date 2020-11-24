@@ -84,6 +84,8 @@ type Game struct {
 
 // Update calculates game logic
 func (g *Game) Update() error {
+
+	// Pressing Esc any time quits immediately
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("game quit by player")
 	}
@@ -114,23 +116,14 @@ func (g *Game) Update() error {
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	if !g.Earth.Impacted {
-		screen.DrawImage(g.Earth.Image, g.Earth.Op)
-	}
-	screen.DrawImage(g.Moon.Image, g.Moon.Op)
-	if g.Asteroid.Alive {
-		screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
-	}
-	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
-	if g.Asteroid.Explosion.Exploding {
-		frameWidth := 87
-		screen.DrawImage(g.Asteroid.Explosion.Image.SubImage(image.Rect(
-			g.Asteroid.Explosion.Frame*frameWidth,
-			0,
-			(1+g.Asteroid.Explosion.Frame)*frameWidth,
-			frameWidth,
-		)).(*ebiten.Image), g.Asteroid.Explosion.Op)
-	}
+
+	// Draw game objects
+	g.Earth.Draw(screen)
+	g.Moon.Draw(screen)
+	g.Asteroid.Draw(screen)
+	g.Asteroid.Explosion.Draw(screen)
+	g.Crosshair.Draw(screen)
+
 	if g.GameOver {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
