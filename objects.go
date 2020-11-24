@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	_ "github.com/jatekalkotok/lunar-defence/statik"
 	"github.com/rakyll/statik/fs"
 )
@@ -149,7 +150,7 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.Y)-o.Radius,
 	)
 	if o.Overlaps(g.Asteroid.Object) {
-		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 			if g.AAlive {
 				g.Exploding = true
 			}
