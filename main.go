@@ -42,6 +42,12 @@ func main() {
 	}
 	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
+	gotext := NewObject("/gameover.png")
+	gotext.Op.GeoM.Translate(
+		float64(gameWidth/2-gotext.Image.Bounds().Dx()/2),
+		float64(gameHeight/2-gotext.Image.Bounds().Dy()/2),
+	)
+
 	game := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
@@ -51,8 +57,11 @@ func main() {
 		Earth:     earth,
 		Asteroid:  asteroid,
 		AAlive:    true,
+		Impacted:  false,
+		GameOver:  false,
 		Crosshair: crosshair,
 		Explosion: explosion,
+		GOText:    gotext,
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
@@ -70,8 +79,11 @@ type Game struct {
 	Earth     *Earth
 	Asteroid  *Asteroid
 	AAlive    bool
+	Impacted  bool
+	GameOver  bool
 	Crosshair *Crosshair
 	Explosion *Explosion
+	GOText    *Object
 }
 
 // Update calculates game logic
@@ -80,10 +92,17 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
+	// Game over
+	if g.Impacted && !g.AAlive {
+		g.GameOver = true
+	}
+
+	// Asteroid impacts earth
 	if g.Asteroid.Distance > 0 {
 		g.Asteroid.Distance = g.Asteroid.Distance - 1
 		g.Rotation = g.Rotation - 0.02
 	} else if g.AAlive {
+		g.Impacted = true
 		g.Exploding = true
 	}
 
@@ -99,7 +118,9 @@ func (g *Game) Update() error {
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(g.Earth.Image, g.Earth.Op)
+	if !g.Impacted {
+		screen.DrawImage(g.Earth.Image, g.Earth.Op)
+	}
 	screen.DrawImage(g.Moon.Image, g.Moon.Op)
 	if g.AAlive {
 		screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
@@ -113,6 +134,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			(1+g.Explosion.Frame)*frameWidth,
 			frameWidth,
 		)).(*ebiten.Image), g.Explosion.Op)
+	}
+	if g.GameOver {
+		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
 	// debug(screen, g)
 }
