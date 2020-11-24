@@ -62,11 +62,25 @@ func main() {
 		Asteroid:  asteroid,
 		Crosshair: crosshair,
 		GOText:    gotext,
+		Entities: []Entity{
+			moon,
+			earth,
+			asteroid,
+			asteroid.Explosion,
+			crosshair,
+		},
 	}
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// An Entity represents anything that can update itself in the game and draw
+// itself to the main screen
+type Entity interface {
+	Update(*Game)
+	Draw(*ebiten.Image)
 }
 
 // Game represents the main game state
@@ -80,6 +94,7 @@ type Game struct {
 	GameOver  bool
 	Crosshair *Crosshair
 	GOText    *Object
+	Entities  []Entity
 }
 
 // Update calculates game logic
@@ -105,11 +120,9 @@ func (g *Game) Update() error {
 	}
 
 	// Update object positions
-	g.Earth.Update(g)
-	g.Moon.Update(g)
-	g.Asteroid.Update(g)
-	g.Asteroid.Explosion.Update(g)
-	g.Crosshair.Update(g)
+	for _, v := range g.Entities {
+		v.Update(g)
+	}
 
 	return nil
 }
@@ -118,11 +131,9 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Draw game objects
-	g.Earth.Draw(screen)
-	g.Moon.Draw(screen)
-	g.Asteroid.Draw(screen)
-	g.Asteroid.Explosion.Draw(screen)
-	g.Crosshair.Draw(screen)
+	for _, v := range g.Entities {
+		v.Draw(screen)
+	}
 
 	if g.GameOver {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
