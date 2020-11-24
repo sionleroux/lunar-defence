@@ -149,8 +149,11 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.Y)-o.Radius,
 	)
 	if o.Overlaps(g.Asteroid.Object) {
-		log.Println("target acquired!")
-		// TODO: add logic here
+		if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+			if g.AAlive {
+				g.Exploding = true
+			}
+		}
 	}
 }
 
