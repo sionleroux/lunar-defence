@@ -130,6 +130,7 @@ func (o *Explosion) Update(g *Game) {
 			o.Frame++
 		} else {
 			g.Exploding = false
+			g.AAlive = false
 		}
 	}
 }

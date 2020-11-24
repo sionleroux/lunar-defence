@@ -50,6 +50,7 @@ func main() {
 		Moon:      moon,
 		Earth:     earth,
 		Asteroid:  asteroid,
+		AAlive:    true,
 		Crosshair: crosshair,
 		Explosion: explosion,
 	}
@@ -68,6 +69,7 @@ type Game struct {
 	Moon      *Moon
 	Earth     *Earth
 	Asteroid  *Asteroid
+	AAlive    bool
 	Crosshair *Crosshair
 	Explosion *Explosion
 }
@@ -81,7 +83,7 @@ func (g *Game) Update() error {
 	if g.Asteroid.Distance > 0 {
 		g.Asteroid.Distance = g.Asteroid.Distance - 1
 		g.Rotation = g.Rotation - 0.02
-	} else {
+	} else if g.AAlive {
 		g.Exploding = true
 	}
 
@@ -99,7 +101,9 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.Earth.Image, g.Earth.Op)
 	screen.DrawImage(g.Moon.Image, g.Moon.Op)
-	screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
+	if g.AAlive {
+		screen.DrawImage(g.Asteroid.Image, g.Asteroid.Op)
+	}
 	screen.DrawImage(g.Crosshair.Image, g.Crosshair.Op)
 	if g.Exploding {
 		frameWidth := 87
