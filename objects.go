@@ -149,13 +149,13 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.X)-o.Radius,
 		float64(o.Center.Y)-o.Radius,
 	)
-	if o.Overlaps(g.Asteroid.Object) {
-		if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
-			if g.AAlive {
-				g.Exploding = true
-			}
-		}
+	if clicked() && o.Overlaps(g.Asteroid.Object) && g.AAlive {
+		g.Exploding = true
 	}
+}
+
+func clicked() bool {
+	return inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 }
 
 func loadImage(name string) *ebiten.Image {
