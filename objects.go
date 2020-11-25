@@ -139,8 +139,10 @@ func (o *Asteroid) Update(g *Game) {
 
 	// Handle Explosion
 	o.Explosion.Update(g, o)
-	if o.Explosion.Done {
+	if o.Explosion.Done && o.Alive {
 		o.Alive = false
+		g.Count++
+		log.Println(g.Count)
 	}
 }
 

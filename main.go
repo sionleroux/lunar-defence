@@ -4,6 +4,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"image"
 	"log"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func main() {
@@ -29,7 +31,7 @@ func main() {
 		Impacted: false,
 	}
 
-	const howMany int = 20
+	const howMany int = 200
 	asteroids := make(Asteroids, 0, howMany)
 	for i := 0; i < howMany; i++ {
 		explosion := &Explosion{
@@ -43,7 +45,7 @@ func main() {
 		asteroids = append(asteroids, &Asteroid{
 			Object:    NewObject(("/asteroid.png")),
 			Angle:     rand.Float64() * math.Pi * 2,
-			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
+			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*20,
 			Explosion: explosion,
 			Alive:     true,
 			Impacting: false,
@@ -63,6 +65,7 @@ func main() {
 		Height:    gameHeight,
 		GameOver:  false,
 		Rotation:  0,
+		Count:     0,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroids: asteroids,
@@ -93,6 +96,7 @@ type Game struct {
 	Width     int
 	Height    int
 	Rotation  float64
+	Count     int
 	Moon      *Moon
 	Earth     *Earth
 	Asteroids Asteroids
@@ -149,6 +153,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
 
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("%d", g.Count))
 	// debug(screen, g)
 }
 
