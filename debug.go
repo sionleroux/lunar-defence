@@ -28,24 +28,6 @@ func debug(screen *ebiten.Image, g *Game) {
 		color.RGBA{0, 255, 0, 255},
 	)
 
-	ebitenutil.DrawRect(
-		screen,
-		float64(g.Asteroid.Center.X-5),
-		float64(g.Asteroid.Center.Y-5),
-		10,
-		10,
-		color.RGBA{255, 255, 0, 255},
-	)
-
-	ebitenutil.DrawLine(
-		screen,
-		float64(g.Earth.Center.X),
-		float64(g.Earth.Center.Y),
-		float64(g.Earth.Center.X)+g.Earth.Radius+g.Asteroid.Distance,
-		float64(g.Earth.Center.Y),
-		color.White,
-	)
-
 	ebitenutil.DrawLine(
 		screen,
 		float64(g.Earth.Center.X),

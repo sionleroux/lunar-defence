@@ -21,7 +21,7 @@ type Object struct {
 }
 
 // Overlaps reports whether o and p have a non-empty intersection
-func (o Object) Overlaps(p *Object) bool {
+func (o *Object) Overlaps(p *Object) bool {
 	diff := o.Center.Sub(p.Center)
 	distance := math.Sqrt(math.Pow(float64(diff.X), 2) + math.Pow(float64(diff.Y), 2))
 	if distance <= o.Radius+p.Radius {
@@ -100,17 +100,20 @@ type Asteroid struct {
 	Distance  float64
 	Explosion *Explosion
 	Alive     bool
+	Impacting bool
 }
 
 // Update recalculates Asteroid position
-func (o Asteroid) Update(g *Game) {
+func (o *Asteroid) Update(g *Game) {
 	const RotationSpeed float64 = 3
-	o.Op.GeoM.Reset()
 
-	// Spin the asteroid
-	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
-	o.Op.GeoM.Rotate(g.Rotation * RotationSpeed)
-	o.Op.GeoM.Translate(o.Radius, o.Radius)
+	// Asteroid impacts earth
+	if o.Distance > 0 {
+		o.Distance = o.Distance - 1
+	} else if o.Alive {
+		o.Impacting = true
+		o.Explosion.Exploding = true
+	}
 
 	// Calculated centre for collision detection
 	t := o.Angle
@@ -122,11 +125,23 @@ func (o Asteroid) Update(g *Game) {
 		int(y)+g.Height/2,
 	)
 
+	// Re-translate GeoM
+	o.Op.GeoM.Reset()
+
+	// Spin the asteroid
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+	o.Op.GeoM.Rotate(g.Rotation * RotationSpeed)
+	o.Op.GeoM.Translate(o.Radius, o.Radius)
+
 	// Move to newly calculated x, y with image offset to center
 	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
-	o.Explosion.Update(g)
+	// Handle Explosion
+	o.Explosion.Update(g, o)
+	if o.Explosion.Done {
+		o.Alive = false
+	}
 }
 
 // Draw renders a Asteroid to the screen
@@ -137,16 +152,58 @@ func (o *Asteroid) Draw(screen *ebiten.Image) {
 	}
 }
 
+// Asteroids are multiple of a single Asteroid
+type Asteroids []*Asteroid
+
+// Update updates all the Asteroids
+func (as Asteroids) Update(g *Game) {
+	for _, v := range as {
+		v.Update(g)
+	}
+
+	// TODO: delete dead asteroids
+	// append(s[:index], s[index+1:]...)
+
+}
+
+// Draw updates all the Asteroids
+func (as Asteroids) Draw(screen *ebiten.Image) {
+	for _, v := range as {
+		v.Draw(screen)
+	}
+}
+
+// Alive returns true if any Asteroids are alive
+func (as Asteroids) Alive() bool {
+	for _, v := range as {
+		if v.Alive {
+			return true
+		}
+	}
+	return false
+}
+
+// Impacting returns true if any Asteroids are impacting
+func (as Asteroids) Impacting() bool {
+	for _, v := range as {
+		if v.Impacting {
+			return true
+		}
+	}
+	return false
+}
+
 // An Explosion is an animated impact explosion
 type Explosion struct {
 	*Object
 	Frame     int
 	Exploding bool
+	Done      bool
 }
 
 // Update sets positioning and animation for Explosions
-func (o *Explosion) Update(g *Game) {
-	o.Center.X, o.Center.Y = g.Asteroid.Center.X, g.Asteroid.Center.Y
+func (o *Explosion) Update(g *Game, a *Asteroid) {
+	o.Center.X, o.Center.Y = a.Center.X, a.Center.Y
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
@@ -156,7 +213,7 @@ func (o *Explosion) Update(g *Game) {
 			o.Frame++
 		} else {
 			o.Exploding = false
-			g.Asteroid.Alive = false
+			o.Done = true
 		}
 	}
 }
@@ -185,8 +242,12 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.X)-o.Radius,
 		float64(o.Center.Y)-o.Radius,
 	)
-	if clicked() && o.Overlaps(g.Asteroid.Object) && g.Asteroid.Alive {
-		g.Asteroid.Explosion.Exploding = true
+	if clicked() {
+		for _, v := range g.Asteroids {
+			if o.Overlaps(v.Object) && v.Alive {
+				v.Explosion.Exploding = true
+			}
+		}
 	}
 }
 

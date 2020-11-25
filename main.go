@@ -29,19 +29,25 @@ func main() {
 		Impacted: false,
 	}
 
-	explosion := &Explosion{
-		Object:    NewObject("/explosion.png"),
-		Frame:     1,
-		Exploding: false,
-	}
-	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
+	const howMany int = 3
+	asteroids := make(Asteroids, 0, howMany)
+	for i := 0; i < howMany; i++ {
+		explosion := &Explosion{
+			Object:    NewObject("/explosion.png"),
+			Frame:     1,
+			Exploding: false,
+			Done:      false,
+		}
+		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
-	asteroid := &Asteroid{
-		Object:    NewObject(("/asteroid.png")),
-		Angle:     rand.Float64() * math.Pi * 2,
-		Distance:  earth.Radius * 2,
-		Explosion: explosion,
-		Alive:     true,
+		asteroids = append(asteroids, &Asteroid{
+			Object:    NewObject(("/asteroid.png")),
+			Angle:     rand.Float64() * math.Pi * 2,
+			Distance:  earth.Radius * 2,
+			Explosion: explosion,
+			Alive:     true,
+			Impacting: false,
+		})
 	}
 
 	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
@@ -59,13 +65,13 @@ func main() {
 		Rotation:  0,
 		Moon:      moon,
 		Earth:     earth,
-		Asteroid:  asteroid,
+		Asteroids: asteroids,
 		Crosshair: crosshair,
 		GOText:    gotext,
 		Entities: []Entity{
 			moon,
 			earth,
-			asteroid,
+			asteroids,
 			crosshair,
 		},
 	}
@@ -89,7 +95,7 @@ type Game struct {
 	Rotation  float64
 	Moon      *Moon
 	Earth     *Earth
-	Asteroid  *Asteroid
+	Asteroids Asteroids
 	GameOver  bool
 	Crosshair *Crosshair
 	GOText    *Object
@@ -104,19 +110,18 @@ func (g *Game) Update() error {
 		return errors.New("game quit by player")
 	}
 
+	// Impact logic
+	if g.Asteroids.Alive() && g.Asteroids.Impacting() {
+		g.Earth.Impacted = true
+	}
+
 	// Game over
-	if g.Earth.Impacted && !g.Asteroid.Alive {
+	if g.Earth.Impacted && !g.Asteroids.Alive() {
 		g.GameOver = true
 	}
 
-	// Asteroid impacts earth
-	if g.Asteroid.Distance > 0 {
-		g.Asteroid.Distance = g.Asteroid.Distance - 1
-		g.Rotation = g.Rotation - 0.02
-	} else if g.Asteroid.Alive {
-		g.Earth.Impacted = true
-		g.Asteroid.Explosion.Exploding = true
-	}
+	// Global rotation for orbiting bodies
+	g.Rotation = g.Rotation - 0.02
 
 	// Update object positions
 	for _, v := range g.Entities {
@@ -137,6 +142,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.GameOver {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
+
 	// debug(screen, g)
 }
 
