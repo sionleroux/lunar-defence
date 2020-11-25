@@ -29,7 +29,7 @@ func main() {
 		Impacted: false,
 	}
 
-	const howMany int = 3
+	const howMany int = 20
 	asteroids := make(Asteroids, 0, howMany)
 	for i := 0; i < howMany; i++ {
 		explosion := &Explosion{
