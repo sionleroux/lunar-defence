@@ -116,8 +116,14 @@ func (g *Game) Update() error {
 	}
 
 	// Game over
-	if g.Earth.Impacted && !g.Asteroids.Alive() {
-		g.GameOver = true
+	if g.Earth.Impacted {
+		if g.Asteroids.Alive() {
+			for _, v := range g.Asteroids {
+				v.Explosion.Exploding = true
+			}
+		} else {
+			g.GameOver = true
+		}
 	}
 
 	// Global rotation for orbiting bodies
