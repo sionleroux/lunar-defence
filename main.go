@@ -43,7 +43,7 @@ func main() {
 		asteroids = append(asteroids, &Asteroid{
 			Object:    NewObject(("/asteroid.png")),
 			Angle:     rand.Float64() * math.Pi * 2,
-			Distance:  earth.Radius * 2,
+			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
 			Explosion: explosion,
 			Alive:     true,
 			Impacting: false,
