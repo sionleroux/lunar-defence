@@ -139,7 +139,7 @@ func (o *Asteroid) Update(g *Game) {
 
 	// Handle Explosion
 	o.Explosion.Update(g, o)
-	if o.Explosion.Done {
+	if o.Explosion.Done && o.Alive {
 		o.Alive = false
 	}
 }
@@ -246,6 +246,7 @@ func (o *Crosshair) Update(g *Game) {
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive {
 				v.Explosion.Exploding = true
+				g.Count++
 			}
 		}
 	}

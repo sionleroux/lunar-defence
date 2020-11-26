@@ -5,12 +5,18 @@ package main
 import (
 	"errors"
 	"image"
+	"image/color"
 	"log"
 	"math"
 	"math/rand"
+	"strconv"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/text"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 func main() {
@@ -58,11 +64,26 @@ func main() {
 		float64(gameHeight/2-gotext.Image.Bounds().Dy()/2),
 	)
 
+	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fontface, err := opentype.NewFace(fontdata, &opentype.FaceOptions{
+		Size:    32,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	game := &Game{
 		Width:     gameWidth,
 		Height:    gameHeight,
+		FontFace:  fontface,
 		GameOver:  false,
 		Rotation:  0,
+		Count:     0,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroids: asteroids,
@@ -92,7 +113,9 @@ type Entity interface {
 type Game struct {
 	Width     int
 	Height    int
+	FontFace  font.Face
 	Rotation  float64
+	Count     int
 	Moon      *Moon
 	Earth     *Earth
 	Asteroids Asteroids
@@ -149,6 +172,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
 
+	f, _ := font.BoundString(g.FontFace, "I")
+	h := (f.Max.Y - f.Min.Y).Ceil() * 2
+	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, 20, h, color.White)
 	// debug(screen, g)
 }
 
