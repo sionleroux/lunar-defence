@@ -49,13 +49,31 @@ type Moon struct {
 
 // Update recalculates moon position
 func (o Moon) Update(g *Game) {
-	o.Op.GeoM.Reset()
-	o.Op.GeoM.Translate(
-		-g.Earth.Radius-o.Radius*2,
-		-g.Earth.Radius-o.Radius*2,
+	t := g.Rotation / 3
+	d := g.Earth.Radius + o.Radius*2
+
+	// Calculated centre for collision detection
+	x := (d) * math.Cos(t)
+	y := (d) * math.Sin(t)
+	o.Center = image.Pt(
+		int(x)+g.Width/2,
+		int(y)+g.Height/2,
 	)
-	o.Op.GeoM.Rotate(g.Rotation / 3)
-	o.Op.GeoM.Translate(g.Earth.Pt())
+
+	// Spin the moon
+	// Re-translate GeoM
+	o.Op.GeoM.Reset()
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+	o.Op.GeoM.Rotate(t)
+	o.Op.GeoM.Translate(o.Radius, o.Radius)
+	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+
+	for _, v := range g.Asteroids {
+		if o.Overlaps(v.Object) && v.Alive {
+			v.Explosion.Exploding = true
+		}
+	}
 }
 
 // Draw renders a Moon to the screen
