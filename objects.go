@@ -56,7 +56,7 @@ type Moon struct {
 // Update recalculates moon position
 func (o Moon) Update(g *Game) {
 	t := g.Rotation / 3
-	d := g.Earth.Radius + o.Radius*2
+	d := g.Earth.Radius + o.Radius*5
 
 	// Calculated centre for collision detection
 	x := (d) * math.Cos(t)
