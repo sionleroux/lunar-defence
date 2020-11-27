@@ -37,9 +37,11 @@ func main() {
 
 	const howMany int = 20
 	asteroids := make(Asteroids, 0, howMany)
+	asteroidImage := loadImage("/asteroid.png")
+	explosionImage := loadImage("/explosion.png")
 	for i := 0; i < howMany; i++ {
 		explosion := &Explosion{
-			Object:    NewObject("/explosion.png"),
+			Object:    NewObjectFromImage(explosionImage),
 			Frame:     1,
 			Exploding: false,
 			Done:      false,
@@ -47,7 +49,7 @@ func main() {
 		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
 		asteroids = append(asteroids, &Asteroid{
-			Object:    NewObject(("/asteroid.png")),
+			Object:    NewObjectFromImage(asteroidImage),
 			Angle:     rand.Float64() * math.Pi * 2,
 			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
 			Explosion: explosion,

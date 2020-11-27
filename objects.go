@@ -34,6 +34,12 @@ func (o *Object) Overlaps(p *Object) bool {
 // after laoding it from the statikFS
 func NewObject(filename string) *Object {
 	img := loadImage(filename)
+	return NewObjectFromImage(img)
+}
+
+// NewObjectFromImage makes a new game Object with fields calculated from an
+// already loaded image
+func NewObjectFromImage(img *ebiten.Image) *Object {
 	return &Object{
 		Image:  img,
 		Op:     &ebiten.DrawImageOptions{},
