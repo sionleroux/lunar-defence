@@ -24,80 +24,10 @@ func main() {
 	ebiten.SetWindowTitle("Lunar Defence")
 	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
-	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 
-	moon := &Moon{Object: NewObject("/moon.png")}
-
-	earth := &Earth{
-		Object:   NewObject(("/earth.png")),
-		Center:   image.Point{gameWidth / 2, gameHeight / 2},
-		Impacted: false,
-	}
-
-	const howMany int = 20
-	asteroids := make(Asteroids, 0, howMany)
-	asteroidImage := loadImage("/asteroid.png")
-	explosionImage := loadImage("/explosion.png")
-	for i := 0; i < howMany; i++ {
-		explosion := &Explosion{
-			Object:    NewObjectFromImage(explosionImage),
-			Frame:     1,
-			Exploding: false,
-			Done:      false,
-		}
-		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
-
-		asteroids = append(asteroids, &Asteroid{
-			Object:    NewObjectFromImage(asteroidImage),
-			Angle:     rand.Float64() * math.Pi * 2,
-			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
-			Explosion: explosion,
-			Alive:     true,
-			Impacting: false,
-		})
-	}
-
-	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
-
-	gotext := NewObject("/gameover.png")
-	gotext.Op.GeoM.Translate(
-		float64(gameWidth/2-gotext.Image.Bounds().Dx()/2),
-		float64(gameHeight/2-gotext.Image.Bounds().Dy()/2),
-	)
-
-	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fontface, err := opentype.NewFace(fontdata, &opentype.FaceOptions{
-		Size:    32,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	game := &Game{
-		Width:     gameWidth,
-		Height:    gameHeight,
-		FontFace:  fontface,
-		GameOver:  false,
-		Rotation:  0,
-		Count:     0,
-		Moon:      moon,
-		Earth:     earth,
-		Asteroids: asteroids,
-		Crosshair: crosshair,
-		GOText:    gotext,
-		Entities: []Entity{
-			moon,
-			earth,
-			asteroids,
-			crosshair,
-		},
-	}
+	game := &Game{}
+	game.Restart()
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
@@ -127,6 +57,86 @@ type Game struct {
 	Entities  []Entity
 }
 
+// Restart starts a new game with fresh asteroids
+func (g *Game) Restart() {
+	g.Width, g.Height = 1280, 960
+
+	moon := &Moon{Object: NewObject("/moon.png")}
+	g.Moon = moon
+
+	earth := &Earth{
+		Object:   NewObject(("/earth.png")),
+		Center:   image.Point{gameWidth / 2, gameHeight / 2},
+		Impacted: false,
+	}
+	g.Earth = earth
+
+	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
+
+	gotext := NewObject("/gameover.png")
+	gotext.Op.GeoM.Translate(
+		float64(gameWidth/2-gotext.Image.Bounds().Dx()/2),
+		float64(gameHeight/2-gotext.Image.Bounds().Dy()/2),
+	)
+
+	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fontface, err := opentype.NewFace(fontdata, &opentype.FaceOptions{
+		Size:    32,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	const howMany int = 20
+	asteroids := make(Asteroids, 0, howMany)
+
+	asteroidImage := loadImage("/asteroid.png")
+	explosionImage := loadImage("/explosion.png")
+
+	for i := 0; i < howMany; i++ {
+		explosion := &Explosion{
+			Object:    NewObjectFromImage(explosionImage),
+			Frame:     1,
+			Exploding: false,
+			Done:      false,
+		}
+		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
+		asteroids = append(asteroids, &Asteroid{
+			Object:    NewObjectFromImage(asteroidImage),
+			Angle:     rand.Float64() * math.Pi * 2,
+			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
+			Explosion: explosion,
+			Alive:     true,
+			Impacting: false,
+		})
+	}
+
+	return &Game{
+		Width:     gameWidth,
+		Height:    gameHeight,
+		FontFace:  fontface,
+		GameOver:  false,
+		Rotation:  0,
+		Count:     0,
+		Moon:      moon,
+		Earth:     earth,
+		Asteroids: asteroids,
+		Crosshair: crosshair,
+		GOText:    gotext,
+		Entities: []Entity{
+			moon,
+			earth,
+			asteroids,
+			crosshair,
+		},
+	}
+}
+
 // Update calculates game logic
 func (g *Game) Update() error {
 
@@ -149,6 +159,11 @@ func (g *Game) Update() error {
 		} else {
 			g.GameOver = true
 		}
+	}
+
+	// Restart game
+	if g.GameOver && clicked() {
+		g = NewGame()
 	}
 
 	// Global rotation for orbiting bodies
