@@ -26,6 +26,7 @@ func main() {
 
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
+	howMany := 5 // starting number of asteroids
 
 	earth := &Earth{
 		Object:   NewObject(("/earth.png")),
@@ -35,7 +36,7 @@ func main() {
 
 	moon := &Moon{Object: NewObject("/moon.png")}
 	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
-	asteroids := NewAsteroids(earth.Radius)
+	asteroids := NewAsteroids(earth.Radius, howMany)
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
@@ -63,6 +64,7 @@ func main() {
 		GameOver:  false,
 		Rotation:  0,
 		Count:     0,
+		HowMany:   howMany,
 		Moon:      moon,
 		Earth:     earth,
 		Asteroids: asteroids,
@@ -82,8 +84,7 @@ func main() {
 }
 
 // NewAsteroids makes a fresh set of asteroids
-func NewAsteroids(earthRadius float64) Asteroids {
-	const howMany int = 20
+func NewAsteroids(earthRadius float64, howMany int) Asteroids {
 	asteroids := make(Asteroids, 0, howMany)
 	asteroidImage := loadImage("/asteroid.png")
 	explosionImage := loadImage("/explosion.png")
@@ -123,6 +124,7 @@ type Game struct {
 	FontFace  font.Face
 	Rotation  float64
 	Count     int
+	HowMany   int
 	Moon      *Moon
 	Earth     *Earth
 	Asteroids Asteroids
@@ -159,7 +161,7 @@ func (g *Game) Update() error {
 	// Game restart
 	if g.GameOver && clicked() {
 		g.Count = 0
-		g.Asteroids = NewAsteroids(g.Earth.Radius)
+		g.Asteroids = NewAsteroids(g.Earth.Radius, g.HowMany)
 		g.Entities[0] = g.Asteroids
 		g.Earth.Impacted = false
 		g.GameOver = false
