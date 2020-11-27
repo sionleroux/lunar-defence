@@ -8,3 +8,4 @@ script:
     cd -
     go generate
     go build .
+    go test .
