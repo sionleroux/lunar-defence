@@ -214,12 +214,20 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
 
+	// HUD and other text
 	padding := 20
 	f, _ := font.BoundString(g.FontFace, "00")
 	h := (f.Max.Y - f.Min.Y).Ceil() * 2
 	w := (f.Max.X - f.Min.X).Ceil() + padding
 	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, padding, h, color.White)
 	text.Draw(screen, strconv.Itoa(g.Wave), g.FontFace, g.Width-w, h, color.White)
+	tryAgain := "CLICK TO TRY AGAIN"
+	tryAgainF, _ := font.BoundString(g.FontFace, tryAgain)
+	tryAgainW := (tryAgainF.Max.X - tryAgainF.Min.X).Ceil() / 2
+	if g.GameOver {
+		text.Draw(screen, tryAgain, g.FontFace, g.Width/2-tryAgainW, h, color.White)
+	}
+
 	// debug(screen, g)
 }
 
