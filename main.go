@@ -230,10 +230,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	w := (f.Max.X - f.Min.X).Ceil() + padding
 	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, padding, h, color.White)
 	text.Draw(screen, strconv.Itoa(g.Wave), g.FontFace, g.Width-w, h, color.White)
-	tryAgain := "CLICK TO TRY AGAIN"
-	tryAgainF, _ := font.BoundString(g.FontFace, tryAgain)
-	tryAgainW := (tryAgainF.Max.X - tryAgainF.Min.X).Ceil() / 2
-	if g.GameOver {
+	if g.GameOver && !g.Breathless {
+		tryAgain := "CLICK TO TRY AGAIN"
+		tryAgainF, _ := font.BoundString(g.FontFace, tryAgain)
+		tryAgainW := (tryAgainF.Max.X - tryAgainF.Min.X).Ceil() / 2
 		text.Draw(screen, tryAgain, g.FontFace, g.Width/2-tryAgainW, h, color.White)
 	}
 
