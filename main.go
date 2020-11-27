@@ -160,11 +160,11 @@ func (g *Game) Update() error {
 
 	// Game restart
 	if g.GameOver && clicked() {
-		g.Count = 0
-		g.Asteroids = NewAsteroids(g.Earth.Radius, g.HowMany)
-		g.Entities[0] = g.Asteroids
-		g.Earth.Impacted = false
-		g.GameOver = false
+		g.Restart()
+	}
+	if !g.GameOver && !g.Asteroids.Alive() {
+		g.HowMany *= 2
+		g.Restart()
 	}
 
 	// Global rotation for orbiting bodies
@@ -176,6 +176,15 @@ func (g *Game) Update() error {
 	}
 
 	return nil
+}
+
+// Restart starts a new game with states reset
+func (g *Game) Restart() {
+	g.Count = 0
+	g.Asteroids = NewAsteroids(g.Earth.Radius, g.HowMany)
+	g.Entities[0] = g.Asteroids
+	g.Earth.Impacted = false
+	g.GameOver = false
 }
 
 // Draw handles rendering the sprites
