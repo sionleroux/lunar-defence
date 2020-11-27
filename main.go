@@ -65,6 +65,7 @@ func main() {
 		Breathless: false,
 		Rotation:   0,
 		Count:      0,
+		Wave:       1,
 		HowMany:    howMany,
 		Moon:       moon,
 		Earth:      earth,
@@ -126,6 +127,7 @@ type Game struct {
 	FontFace   font.Face
 	Rotation   float64
 	Count      int
+	Wave       int
 	HowMany    int
 	Moon       *Moon
 	Earth      *Earth
@@ -167,6 +169,7 @@ func (g *Game) Update() error {
 	}
 	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless {
 		log.Println("wave passed")
+		g.Wave++
 		g.Breathless = true
 		takeABreath := time.NewTimer(time.Second * 2)
 		go func() {
@@ -211,9 +214,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		screen.DrawImage(g.GOText.Image, g.GOText.Op)
 	}
 
-	f, _ := font.BoundString(g.FontFace, "I")
+	padding := 20
+	f, _ := font.BoundString(g.FontFace, "00")
 	h := (f.Max.Y - f.Min.Y).Ceil() * 2
-	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, 20, h, color.White)
+	w := (f.Max.X - f.Min.X).Ceil() + padding
+	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, padding, h, color.White)
+	text.Draw(screen, strconv.Itoa(g.Wave), g.FontFace, g.Width-w, h, color.White)
 	// debug(screen, g)
 }
 
