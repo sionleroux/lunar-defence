@@ -99,8 +99,8 @@ func NewAsteroids(earthRadius float64, howMany int) Asteroids {
 		}
 		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
-		edgeOfScreenOffset := earthRadius * 3.5
-		distance := rand.Float64() * earthRadius * float64(howMany) / 5
+		edgeOfScreenOffset := earthRadius * 3
+		distance := rand.Float64() * earthRadius * float64(howMany) / 7
 		asteroids = append(asteroids, &Asteroid{
 			Object:    NewObjectFromImage(asteroidImage),
 			Angle:     rand.Float64() * math.Pi * 2,
