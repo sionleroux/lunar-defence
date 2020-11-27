@@ -58,18 +58,19 @@ func main() {
 	}
 
 	game := &Game{
-		Width:     gameWidth,
-		Height:    gameHeight,
-		FontFace:  fontface,
-		GameOver:  false,
-		Rotation:  0,
-		Count:     0,
-		HowMany:   howMany,
-		Moon:      moon,
-		Earth:     earth,
-		Asteroids: asteroids,
-		Crosshair: crosshair,
-		GOText:    gotext,
+		Width:      gameWidth,
+		Height:     gameHeight,
+		FontFace:   fontface,
+		GameOver:   false,
+		Breathless: false,
+		Rotation:   0,
+		Count:      0,
+		HowMany:    howMany,
+		Moon:       moon,
+		Earth:      earth,
+		Asteroids:  asteroids,
+		Crosshair:  crosshair,
+		GOText:     gotext,
 		Entities: []Entity{
 			asteroids,
 			moon,
@@ -119,19 +120,20 @@ type Entity interface {
 
 // Game represents the main game state
 type Game struct {
-	Width     int
-	Height    int
-	FontFace  font.Face
-	Rotation  float64
-	Count     int
-	HowMany   int
-	Moon      *Moon
-	Earth     *Earth
-	Asteroids Asteroids
-	GameOver  bool
-	Crosshair *Crosshair
-	GOText    *Object
-	Entities  []Entity
+	Width      int
+	Height     int
+	FontFace   font.Face
+	Rotation   float64
+	Count      int
+	HowMany    int
+	Moon       *Moon
+	Earth      *Earth
+	Asteroids  Asteroids
+	GameOver   bool
+	Breathless bool // when you need a break between waves
+	Crosshair  *Crosshair
+	GOText     *Object
+	Entities   []Entity
 }
 
 // Update calculates game logic
@@ -162,9 +164,17 @@ func (g *Game) Update() error {
 	if g.GameOver && clicked() {
 		g.Restart()
 	}
-	if !g.GameOver && !g.Asteroids.Alive() {
-		g.HowMany *= 2
-		g.Restart()
+	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless {
+		log.Println("wave passed")
+		g.Breathless = true
+		takeABreath := time.NewTimer(time.Second * 2)
+		go func() {
+			log.Println("waiting")
+			<-takeABreath.C
+			g.HowMany *= 2
+			g.Restart()
+			g.Breathless = false // needs to come after restart
+		}()
 	}
 
 	// Global rotation for orbiting bodies
@@ -180,6 +190,7 @@ func (g *Game) Update() error {
 
 // Restart starts a new game with states reset
 func (g *Game) Restart() {
+	log.Printf("new wave: %d\n", g.HowMany)
 	g.Count = 0
 	g.Asteroids = NewAsteroids(g.Earth.Radius, g.HowMany)
 	g.Entities[0] = g.Asteroids
