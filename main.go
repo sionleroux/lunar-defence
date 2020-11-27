@@ -64,7 +64,7 @@ func main() {
 		GameOver:   false,
 		Breathless: false,
 		Rotation:   0,
-		Count:      0,
+		Count:      howMany,
 		Wave:       1,
 		HowMany:    howMany,
 		Moon:       moon,
@@ -204,7 +204,7 @@ func (g *Game) Update() error {
 // Restart starts a new game with states reset
 func (g *Game) Restart() {
 	log.Printf("new wave: %d\n", g.HowMany)
-	g.Count = 0
+	g.Count = g.HowMany
 	g.Asteroids = NewAsteroids(g.Earth.Radius, g.HowMany)
 	g.Entities[0] = g.Asteroids
 	g.Earth.Impacted = false

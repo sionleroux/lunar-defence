@@ -76,8 +76,9 @@ func (o Moon) Update(g *Game) {
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
 	for _, v := range g.Asteroids {
-		if o.Overlaps(v.Object) && v.Alive {
+		if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 			v.Explosion.Exploding = true
+			g.Count--
 		}
 	}
 }
@@ -268,9 +269,9 @@ func (o *Crosshair) Update(g *Game) {
 	)
 	if clicked() {
 		for _, v := range g.Asteroids {
-			if o.Overlaps(v.Object) && v.Alive {
+			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
-				g.Count++
+				g.Count--
 			}
 		}
 	}
