@@ -158,13 +158,21 @@ func (g *Game) Update() error {
 			for _, v := range g.Asteroids {
 				v.Explosion.Exploding = true
 			}
-		} else {
+		} else if !g.GameOver {
 			g.GameOver = true
+			log.Println("game over")
+			g.Breathless = true
+			takeABreath := time.NewTimer(time.Second)
+			go func() {
+				log.Println("waiting")
+				<-takeABreath.C
+				g.Breathless = false
+			}()
 		}
 	}
 
 	// Game restart
-	if g.GameOver && clicked() {
+	if g.GameOver && clicked() && !g.Breathless {
 		g.Restart()
 	}
 	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless {
