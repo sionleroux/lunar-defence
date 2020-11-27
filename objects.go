@@ -122,6 +122,7 @@ type Asteroid struct {
 	*Object
 	Angle     float64
 	Distance  float64
+	Speed     float64
 	Explosion *Explosion
 	Alive     bool
 	Impacting bool
@@ -133,7 +134,7 @@ func (o *Asteroid) Update(g *Game) {
 
 	// Asteroid impacts earth
 	if o.Distance > 0 {
-		o.Distance = o.Distance - 1
+		o.Distance = o.Distance - o.Speed
 	} else if o.Alive {
 		o.Impacting = true
 		o.Explosion.Exploding = true

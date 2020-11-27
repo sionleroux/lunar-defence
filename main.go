@@ -103,6 +103,7 @@ func NewAsteroids(earthRadius float64, howMany int) Asteroids {
 			Object:    NewObjectFromImage(asteroidImage),
 			Angle:     rand.Float64() * math.Pi * 2,
 			Distance:  earthRadius*2 + distance,
+			Speed:     rand.Float64() + 0.8,
 			Explosion: explosion,
 			Alive:     true,
 			Impacting: false,
