@@ -27,38 +27,15 @@ func main() {
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 
-	moon := &Moon{Object: NewObject("/moon.png")}
-
 	earth := &Earth{
 		Object:   NewObject(("/earth.png")),
 		Center:   image.Point{gameWidth / 2, gameHeight / 2},
 		Impacted: false,
 	}
 
-	const howMany int = 20
-	asteroids := make(Asteroids, 0, howMany)
-	asteroidImage := loadImage("/asteroid.png")
-	explosionImage := loadImage("/explosion.png")
-	for i := 0; i < howMany; i++ {
-		explosion := &Explosion{
-			Object:    NewObjectFromImage(explosionImage),
-			Frame:     1,
-			Exploding: false,
-			Done:      false,
-		}
-		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
-
-		asteroids = append(asteroids, &Asteroid{
-			Object:    NewObjectFromImage(asteroidImage),
-			Angle:     rand.Float64() * math.Pi * 2,
-			Distance:  earth.Radius*2 + rand.Float64()*earth.Radius*2,
-			Explosion: explosion,
-			Alive:     true,
-			Impacting: false,
-		})
-	}
-
+	moon := &Moon{Object: NewObject("/moon.png")}
 	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
+	asteroids := NewAsteroids(earth.Radius)
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
@@ -92,9 +69,9 @@ func main() {
 		Crosshair: crosshair,
 		GOText:    gotext,
 		Entities: []Entity{
+			asteroids,
 			moon,
 			earth,
-			asteroids,
 			crosshair,
 		},
 	}
@@ -102,6 +79,34 @@ func main() {
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// NewAsteroids makes a fresh set of asteroids
+func NewAsteroids(earthRadius float64) Asteroids {
+	const howMany int = 20
+	asteroids := make(Asteroids, 0, howMany)
+	asteroidImage := loadImage("/asteroid.png")
+	explosionImage := loadImage("/explosion.png")
+	for i := 0; i < howMany; i++ {
+		explosion := &Explosion{
+			Object:    NewObjectFromImage(explosionImage),
+			Frame:     1,
+			Exploding: false,
+			Done:      false,
+		}
+		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
+
+		asteroids = append(asteroids, &Asteroid{
+			Object:    NewObjectFromImage(asteroidImage),
+			Angle:     rand.Float64() * math.Pi * 2,
+			Distance:  earthRadius*2 + rand.Float64()*earthRadius*2,
+			Explosion: explosion,
+			Alive:     true,
+			Impacting: false,
+		})
+	}
+
+	return asteroids
 }
 
 // An Entity represents anything that can update itself in the game and draw
@@ -149,6 +154,15 @@ func (g *Game) Update() error {
 		} else {
 			g.GameOver = true
 		}
+	}
+
+	// Game restart
+	if g.GameOver && clicked() {
+		g.Count = 0
+		g.Asteroids = NewAsteroids(g.Earth.Radius)
+		g.Entities[0] = g.Asteroids
+		g.Earth.Impacted = false
+		g.GameOver = false
 	}
 
 	// Global rotation for orbiting bodies
