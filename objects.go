@@ -166,7 +166,7 @@ func (o *Asteroid) Update(g *Game) {
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
 
 	// Handle Explosion
-	o.Explosion.Update(g, o)
+	o.Explosion.Update(g, o.Center)
 	if o.Explosion.Done && o.Alive {
 		o.Alive = false
 	}
@@ -230,8 +230,8 @@ type Explosion struct {
 }
 
 // Update sets positioning and animation for Explosions
-func (o *Explosion) Update(g *Game, a *Asteroid) {
-	o.Center.X, o.Center.Y = a.Center.X, a.Center.Y
+func (o *Explosion) Update(g *Game, coords image.Point) {
+	o.Center.X, o.Center.Y = coords.X, coords.Y
 	o.Op.GeoM.Reset()
 	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
@@ -240,6 +240,7 @@ func (o *Explosion) Update(g *Game, a *Asteroid) {
 		if o.Frame < 7 {
 			o.Frame++
 		} else {
+			o.Frame = 1
 			o.Exploding = false
 			o.Done = true
 		}
@@ -262,12 +263,15 @@ type Crosshair struct {
 	*Object
 	CoolingDown  bool
 	Shooting     bool
+	Missing      bool
 	ShootingFrom image.Point
+	Explosion    *Explosion
 }
 
 // Update recalculates the crosshair position
 func (o *Crosshair) Update(g *Game) {
 	o.Shooting = false
+	o.Missing = false
 
 	o.Op.GeoM.Reset()
 	o.Center = image.Pt(ebiten.CursorPosition())
@@ -278,33 +282,35 @@ func (o *Crosshair) Update(g *Game) {
 
 	canShoot := !g.Breathless && !o.CoolingDown
 	if canShoot && clicked() {
+		o.Missing = true
+		o.Shooting = true
+		o.ShootingFrom = g.Moon.Center
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
 				g.Count--
-				o.Shooting = true
+				o.Missing = false
 			}
-		}
-		if !o.Shooting {
-			log.Println("miss")
-			o.CoolingDown = true
-			coolDownTimer := time.NewTimer(time.Second)
-			go func() {
-				<-coolDownTimer.C
-				o.CoolingDown = false
-			}()
 		}
 	}
 
-	if o.Shooting {
-		log.Println(g.Moon.Center)
-		o.ShootingFrom = g.Moon.Center
+	if o.Missing {
+		o.CoolingDown = true
+		o.Explosion.Exploding = true
+		coolDownTimer := time.NewTimer(time.Second)
+		go func() {
+			<-coolDownTimer.C
+			o.CoolingDown = false
+		}()
 	}
+
+	o.Explosion.Update(g, g.Moon.Center)
 }
 
 // Draw renders a Crosshair to the screen
 func (o *Crosshair) Draw(screen *ebiten.Image) {
 	screen.DrawImage(o.Image, o.Op)
+	o.Explosion.Draw(screen)
 
 	// Draw laser from the moon to the crosshair
 	if o.Shooting {

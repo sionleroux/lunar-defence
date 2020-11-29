@@ -50,8 +50,19 @@ func main() {
 		Impacted: false,
 	}
 
+	explosion := &Explosion{
+		Object:    NewObjectFromImage(loadImage("/explosion.png")),
+		Frame:     1,
+		Exploding: false,
+		Done:      false,
+	}
+	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
+	crosshair := &Crosshair{
+		Object:    NewObject(("/crosshair.png")),
+		Explosion: explosion,
+	}
+
 	moon := &Moon{Object: NewObject("/moon.png")}
-	crosshair := &Crosshair{Object: NewObject(("/crosshair.png"))}
 	asteroids := NewAsteroids(earth.Radius, howMany)
 
 	gotext := NewObject("/gameover.png")
