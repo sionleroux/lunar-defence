@@ -2,11 +2,13 @@ package main
 
 import (
 	"image"
+	"image/color"
 	"image/png"
 	"log"
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	_ "github.com/jatekalkotok/lunar-defence/statik"
 	"github.com/rakyll/statik/fs"
@@ -257,29 +259,53 @@ func (o *Explosion) Draw(screen *ebiten.Image) {
 // The Crosshair is a target showing where the the player will shoot
 type Crosshair struct {
 	*Object
+	Shooting     bool
+	ShootingFrom image.Point
 }
 
 // Update recalculates the crosshair position
 func (o *Crosshair) Update(g *Game) {
+	o.Shooting = false
+
 	o.Op.GeoM.Reset()
 	o.Center = image.Pt(ebiten.CursorPosition())
 	o.Op.GeoM.Translate(
 		float64(o.Center.X)-o.Radius,
 		float64(o.Center.Y)-o.Radius,
 	)
+
 	if clicked() {
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
 				g.Count--
+				o.Shooting = true
 			}
 		}
+	}
+
+	if o.Shooting {
+		log.Println(g.Moon.Center)
+		o.ShootingFrom = g.Moon.Center
 	}
 }
 
 // Draw renders a Crosshair to the screen
 func (o *Crosshair) Draw(screen *ebiten.Image) {
 	screen.DrawImage(o.Image, o.Op)
+
+	// Draw laser from the moon to the crosshair
+	if o.Shooting {
+		ebitenutil.DrawLine(
+			screen,
+			float64(o.ShootingFrom.X),
+			float64(o.ShootingFrom.Y),
+			float64(o.Center.X),
+			float64(o.Center.Y),
+			color.RGBA{255, 0, 0, 255},
+		)
+	}
+
 }
 
 // Shorthand for when the left mouse button has just been clicked

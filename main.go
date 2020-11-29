@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"golang.org/x/image/font"
@@ -234,18 +233,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw game objects
 	for _, v := range g.Entities {
 		v.Draw(screen)
-	}
-
-	// Draw laser target from the moon to the crosshair
-	if !g.GameOver {
-		ebitenutil.DrawLine(
-			screen,
-			float64(g.Moon.Center.X),
-			float64(g.Moon.Center.Y),
-			float64(g.Crosshair.Center.X),
-			float64(g.Crosshair.Center.Y),
-			color.RGBA{255, 0, 0, 255},
-		)
 	}
 
 	if g.GameOver {
