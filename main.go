@@ -199,10 +199,7 @@ func (g *Game) Update() error {
 		}
 	}
 
-	// Game restart
-	if g.GameOver && clicked() && !g.Breathless {
-		g.Restart()
-	}
+	// Next wave
 	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless {
 		log.Println("wave passed")
 		g.Wave++
@@ -223,6 +220,11 @@ func (g *Game) Update() error {
 	// Update object positions
 	for _, v := range g.Entities {
 		v.Update(g)
+	}
+
+	// Game restart
+	if g.GameOver && clicked() && !g.Breathless {
+		g.Restart()
 	}
 
 	return nil
