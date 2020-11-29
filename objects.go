@@ -6,6 +6,7 @@ import (
 	"image/png"
 	"log"
 	"math"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -259,6 +260,7 @@ func (o *Explosion) Draw(screen *ebiten.Image) {
 // The Crosshair is a target showing where the the player will shoot
 type Crosshair struct {
 	*Object
+	CoolingDown  bool
 	Shooting     bool
 	ShootingFrom image.Point
 }
@@ -274,13 +276,22 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.Y)-o.Radius,
 	)
 
-	if clicked() {
+	if !o.CoolingDown && clicked() {
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
 				g.Count--
 				o.Shooting = true
 			}
+		}
+		if !o.Shooting {
+			log.Println("miss")
+			o.CoolingDown = true
+			coolDownTimer := time.NewTimer(time.Second)
+			go func() {
+				<-coolDownTimer.C
+				o.CoolingDown = false
+			}()
 		}
 	}
 
@@ -305,7 +316,6 @@ func (o *Crosshair) Draw(screen *ebiten.Image) {
 			color.RGBA{255, 0, 0, 255},
 		)
 	}
-
 }
 
 // Shorthand for when the left mouse button has just been clicked

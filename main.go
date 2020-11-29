@@ -246,6 +246,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	w := (f.Max.X - f.Min.X).Ceil() + padding
 	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, padding, h, color.White)
 	text.Draw(screen, strconv.Itoa(g.Wave), g.FontFace, g.Width-w, h, color.White)
+	if g.Crosshair.CoolingDown { // TODO: this should be in Crosshair.Draw()
+		missText := "MISSED: COOLING DOWN!"
+		missTextF, _ := font.BoundString(g.FontFace, missText)
+		missTextW := (missTextF.Max.X - missTextF.Min.X).Ceil() / 2
+		text.Draw(screen, missText, g.FontFace, g.Width/2-missTextW, h, color.White)
+	}
 	if !g.GameOver && g.Breathless {
 		tryAgain := fmt.Sprintf("WAVE %d", g.Wave)
 		tryAgainF, _ := font.BoundString(g.FontFace, tryAgain)
