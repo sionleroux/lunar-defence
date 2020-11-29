@@ -276,7 +276,8 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.Y)-o.Radius,
 	)
 
-	if !o.CoolingDown && clicked() {
+	canShoot := !g.Breathless && !o.CoolingDown
+	if canShoot && clicked() {
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
