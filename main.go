@@ -19,6 +19,19 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
+	"gopkg.in/ini.v1"
+)
+
+var (
+	HowManyStart       int     = 5
+	EdgeOfScreenOffset float64 = 3
+	DistanceVariance   float64 = 7
+	TimeBetweenWaves   int     = 2
+	WaveMultiplier     int     = 2
+	RotationSpeed      float64 = 0.02
+	MoonOrbitRatio     float64 = 2
+	MoonOrbitDistance  float64 = 5
+	AsteroidSpinRatio  float64 = 3
 )
 
 func main() {
@@ -26,9 +39,11 @@ func main() {
 	ebiten.SetWindowTitle("Lunar Defence")
 	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
+	applyConfigs()
+
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
-	howMany := 5 // starting number of asteroids
+	howMany := HowManyStart // starting number of asteroids
 
 	earth := &Earth{
 		Object:   NewObject(("/earth.png")),
@@ -101,8 +116,8 @@ func NewAsteroids(earthRadius float64, howMany int) Asteroids {
 		}
 		explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 
-		edgeOfScreenOffset := earthRadius * 3
-		distance := rand.Float64() * earthRadius * float64(howMany) / 7
+		edgeOfScreenOffset := earthRadius * EdgeOfScreenOffset
+		distance := rand.Float64() * earthRadius * float64(howMany) / DistanceVariance
 		asteroids = append(asteroids, &Asteroid{
 			Object:    NewObjectFromImage(asteroidImage),
 			Angle:     rand.Float64() * math.Pi * 2,
@@ -182,18 +197,18 @@ func (g *Game) Update() error {
 		log.Println("wave passed")
 		g.Wave++
 		g.Breathless = true
-		takeABreath := time.NewTimer(time.Second * 2)
+		takeABreath := time.NewTimer(time.Second * time.Duration(TimeBetweenWaves))
 		go func() {
 			log.Println("waiting")
 			<-takeABreath.C
-			g.HowMany *= 2
+			g.HowMany *= WaveMultiplier
 			g.Restart()
 			g.Breathless = false // needs to come after restart
 		}()
 	}
 
 	// Global rotation for orbiting bodies
-	g.Rotation = g.Rotation - 0.02
+	g.Rotation = g.Rotation - RotationSpeed
 
 	// Update object positions
 	for _, v := range g.Entities {
@@ -263,4 +278,20 @@ func (g *Game) Draw(screen *ebiten.Image) {
 // Layout is hardcoded for now, may be made dynamic in future
 func (g *Game) Layout(outsideWidth int, outsideHeight int) (screenWidth int, screenHeight int) {
 	return g.Width, g.Height
+}
+
+func applyConfigs() {
+	cfg, err := ini.Load("lunar-defence.ini")
+	log.Println(err)
+	if err == nil {
+		HowManyStart, _ = cfg.Section("").Key("HowManyStart").Int()
+		EdgeOfScreenOffset, _ = cfg.Section("").Key("EdgeOfScreenOffset").Float64()
+		DistanceVariance, _ = cfg.Section("").Key("DistanceVariance").Float64()
+		TimeBetweenWaves, _ = cfg.Section("").Key("TimeBetweenWaves").Int()
+		WaveMultiplier, _ = cfg.Section("").Key("WaveMultiplier").Int()
+		RotationSpeed, _ = cfg.Section("").Key("RotationSpeed").Float64()
+		MoonOrbitRatio, _ = cfg.Section("").Key("MoonOrbitRatio").Float64()
+		MoonOrbitDistance, _ = cfg.Section("").Key("MoonOrbitDistance").Float64()
+		AsteroidSpinRatio, _ = cfg.Section("").Key("AsteroidSpinRatio").Float64()
+	}
 }

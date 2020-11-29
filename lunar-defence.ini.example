@@ -1,0 +1,9 @@
+HowManyStart       = 5    ; how many asteroids to start the first wave with (must be a whole number)
+WaveMultiplier     = 2    ; how many more asteroids to generate in each wave (must be a whole number)
+EdgeOfScreenOffset = 3.0  ; offset to add to asteroid starting distance to get them off the screen
+DistanceVariance   = 7.0  ; how far apart asteroids are spread out in addition to offset from the Earth
+TimeBetweenWaves   = 2.0  ; how many seconds to pause before starting the next wave
+RotationSpeed      = 0.02 ; a base speed that everything else uses, the earth spins at this speed
+MoonOrbitRatio     = 2.0  ; this is how much slower the Moon orbits compared to the Earth's rotation speed
+MoonOrbitDistance  = 5.0  ; how many half-moons away the Moon is from the Earth
+AsteroidSpinRatio  = 3.0  ; how much faster asteroids spin compared to the Earth's rotation speed

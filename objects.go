@@ -55,8 +55,8 @@ type Moon struct {
 
 // Update recalculates moon position
 func (o Moon) Update(g *Game) {
-	t := g.Rotation / 3
-	d := g.Earth.Radius + o.Radius*5
+	t := g.Rotation / MoonOrbitRatio
+	d := g.Earth.Radius + o.Radius*MoonOrbitDistance
 
 	// Calculated centre for collision detection
 	x := (d) * math.Cos(t)
@@ -130,7 +130,7 @@ type Asteroid struct {
 
 // Update recalculates Asteroid position
 func (o *Asteroid) Update(g *Game) {
-	const RotationSpeed float64 = 3
+	var RotationSpeed float64 = AsteroidSpinRatio
 
 	// Asteroid impacts earth
 	if o.Distance > 0 {
