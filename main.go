@@ -44,11 +44,39 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	howMany := HowManyStart // starting number of asteroids
 
+	game := &Game{
+		Width:      gameWidth,
+		Height:     gameHeight,
+		FontFace:   nil,
+		GameOver:   false,
+		Breathless: false,
+		Rotation:   0,
+		Count:      howMany,
+		Wave:       1,
+		HowMany:    howMany,
+		Moon:       nil,
+		Earth:      nil,
+		Asteroids:  nil,
+		Crosshair:  nil,
+		GOText:     nil,
+		Entities:   nil,
+	}
+
+	NewGame(game)
+
+	if err := ebiten.RunGame(game); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// NewGame sets up a new game object with default states and game objects
+func NewGame(game *Game) {
 	earth := &Earth{
 		Object:   NewObject(("/earth.png")),
-		Center:   image.Point{gameWidth / 2, gameHeight / 2},
+		Center:   image.Point{game.Width / 2, game.Height / 2},
 		Impacted: false,
 	}
+	game.Earth = earth
 
 	explosion := &Explosion{
 		Object:    NewObjectFromImage(loadImage("/explosion.png")),
@@ -57,19 +85,20 @@ func main() {
 		Done:      false,
 	}
 	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
-	crosshair := &Crosshair{
+	game.Crosshair = &Crosshair{
 		Object:    NewObject(("/crosshair.png")),
 		Explosion: explosion,
 	}
 
-	moon := &Moon{Object: NewObject("/moon.png")}
-	asteroids := NewAsteroids(earth.Radius, howMany)
+	game.Moon = &Moon{Object: NewObject("/moon.png")}
+	game.Asteroids = NewAsteroids(earth.Radius, game.HowMany)
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
-		float64(gameWidth/2-gotext.Image.Bounds().Dx()/2),
-		float64(gameHeight/2-gotext.Image.Bounds().Dy()/2),
+		float64(game.Width/2-gotext.Image.Bounds().Dx()/2),
+		float64(game.Height/2-gotext.Image.Bounds().Dy()/2),
 	)
+	game.GOText = gotext
 
 	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
 	if err != nil {
@@ -83,33 +112,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	game.FontFace = fontface
 
-	game := &Game{
-		Width:      gameWidth,
-		Height:     gameHeight,
-		FontFace:   fontface,
-		GameOver:   false,
-		Breathless: false,
-		Rotation:   0,
-		Count:      howMany,
-		Wave:       1,
-		HowMany:    howMany,
-		Moon:       moon,
-		Earth:      earth,
-		Asteroids:  asteroids,
-		Crosshair:  crosshair,
-		GOText:     gotext,
-		Entities: []Entity{
-			asteroids,
-			moon,
-			earth,
-			crosshair,
-		},
+	entities := []Entity{
+		game.Asteroids,
+		game.Moon,
+		game.Earth,
+		game.Crosshair,
 	}
+	game.Entities = entities
 
-	if err := ebiten.RunGame(game); err != nil {
-		log.Fatal(err)
-	}
 }
 
 // NewAsteroids makes a fresh set of asteroids
