@@ -280,7 +280,7 @@ func (o *Crosshair) Update(g *Game) {
 		float64(o.Center.Y)-o.Radius,
 	)
 
-	canShoot := !g.Breathless && !o.CoolingDown && !g.GameOver
+	canShoot := !g.Breathless && !o.CoolingDown && !g.GameOver && g.Wave > 0
 	if canShoot && clicked() {
 		o.Missing = true
 		o.Shooting = true

@@ -43,16 +43,18 @@ func main() {
 	gameWidth, gameHeight := 1280, 960
 	rand.Seed(time.Now().UnixNano())
 	howMany := HowManyStart // starting number of asteroids
+	fontFace := loadFont()
 
 	game := &Game{
 		Width:      gameWidth,
 		Height:     gameHeight,
-		FontFace:   nil,
+		FontFace:   fontFace,
+		Loading:    true,
 		GameOver:   false,
 		Breathless: false,
 		Rotation:   0,
-		Count:      howMany,
-		Wave:       1,
+		Count:      0,
+		Wave:       0,
 		HowMany:    howMany,
 		Moon:       nil,
 		Earth:      nil,
@@ -62,7 +64,7 @@ func main() {
 		Entities:   nil,
 	}
 
-	NewGame(game)
+	go NewGame(game)
 
 	if err := ebiten.RunGame(game); err != nil {
 		log.Fatal(err)
@@ -91,7 +93,6 @@ func NewGame(game *Game) {
 	}
 
 	game.Moon = &Moon{Object: NewObject("/moon.png")}
-	game.Asteroids = NewAsteroids(earth.Radius, game.HowMany)
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
@@ -100,28 +101,15 @@ func NewGame(game *Game) {
 	)
 	game.GOText = gotext
 
-	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fontface, err := opentype.NewFace(fontdata, &opentype.FaceOptions{
-		Size:    32,
-		DPI:     72,
-		Hinting: font.HintingFull,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	game.FontFace = fontface
-
 	entities := []Entity{
-		game.Asteroids,
+		Asteroids{},
 		game.Moon,
 		game.Earth,
 		game.Crosshair,
 	}
 	game.Entities = entities
 
+	game.Loading = false
 }
 
 // NewAsteroids makes a fresh set of asteroids
@@ -164,6 +152,7 @@ type Entity interface {
 type Game struct {
 	Width      int
 	Height     int
+	Loading    bool
 	FontFace   font.Face
 	Rotation   float64
 	Count      int
@@ -185,6 +174,11 @@ func (g *Game) Update() error {
 	// Pressing Esc any time quits immediately
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("game quit by player")
+	}
+
+	// Skip updating while the game is loading
+	if g.Loading {
+		return nil
 	}
 
 	// Impact logic
@@ -212,7 +206,7 @@ func (g *Game) Update() error {
 	}
 
 	// Next wave
-	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless {
+	if !g.GameOver && !g.Asteroids.Alive() && !g.Breathless && g.Wave > 0 {
 		log.Println("wave passed")
 		g.Wave++
 		g.Breathless = true
@@ -232,6 +226,12 @@ func (g *Game) Update() error {
 	// Update object positions
 	for _, v := range g.Entities {
 		v.Update(g)
+	}
+
+	// On wave zero, click to start the game
+	if g.Wave == 0 && clicked() {
+		g.Wave++
+		g.Restart()
 	}
 
 	// Game restart
@@ -254,6 +254,22 @@ func (g *Game) Restart() {
 
 // Draw handles rendering the sprites
 func (g *Game) Draw(screen *ebiten.Image) {
+
+	if g.Loading {
+		loadText := "LOADING..."
+		loadTextF, _ := font.BoundString(g.FontFace, loadText)
+		loadTextW := (loadTextF.Max.X - loadTextF.Min.X).Ceil() / 2
+		loadTextH := (loadTextF.Max.Y - loadTextF.Min.Y).Ceil() / 2
+		text.Draw(screen, loadText, g.FontFace, g.Width/2-loadTextW, g.Height/2-loadTextH, color.White)
+		return
+	}
+	if !g.Loading && g.Wave == 0 {
+		startText := "CLICK TO START"
+		startTextF, _ := font.BoundString(g.FontFace, startText)
+		startTextW := (startTextF.Max.X - startTextF.Min.X).Ceil() / 2
+		startTextH := (startTextF.Max.Y - startTextF.Min.Y).Ceil() * 2
+		text.Draw(screen, startText, g.FontFace, g.Width/2-startTextW, startTextH, color.White)
+	}
 
 	// Draw game objects
 	for _, v := range g.Entities {
@@ -312,4 +328,20 @@ func applyConfigs() {
 		MoonOrbitDistance, _ = cfg.Section("").Key("MoonOrbitDistance").Float64()
 		AsteroidSpinRatio, _ = cfg.Section("").Key("AsteroidSpinRatio").Float64()
 	}
+}
+
+func loadFont() font.Face {
+	fontdata, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fontface, err := opentype.NewFace(fontdata, &opentype.FaceOptions{
+		Size:    32,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return fontface
 }
