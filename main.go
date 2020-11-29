@@ -259,7 +259,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	w := (f.Max.X - f.Min.X).Ceil() + padding
 	text.Draw(screen, strconv.Itoa(g.Count), g.FontFace, padding, h, color.White)
 	text.Draw(screen, strconv.Itoa(g.Wave), g.FontFace, g.Width-w, h, color.White)
-	if g.Crosshair.CoolingDown { // TODO: this should be in Crosshair.Draw()
+	if g.Crosshair.CoolingDown && !g.Breathless { // TODO: this should be in Crosshair.Draw()
 		missText := "MISSED: COOLING DOWN!"
 		missTextF, _ := font.BoundString(g.FontFace, missText)
 		missTextW := (missTextF.Max.X - missTextF.Min.X).Ceil() / 2
