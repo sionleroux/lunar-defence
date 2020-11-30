@@ -273,6 +273,16 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		startTextW := (startTextF.Max.X - startTextF.Min.X).Ceil() / 2
 		startTextH := (startTextF.Max.Y - startTextF.Min.Y).Ceil() * 2
 		text.Draw(screen, startText, g.FontFace, g.Width/2-startTextW, startTextH, color.White)
+		creditsText := "By: Siôn le Roux www.sinisterstuf.org"
+		creditsTextF, _ := font.BoundString(g.FontFace, creditsText)
+		creditsTextW := (creditsTextF.Max.X - creditsTextF.Min.X).Ceil() / 2
+		creditsTextH := (creditsTextF.Max.Y - creditsTextF.Min.Y).Ceil() * 2
+		text.Draw(screen, creditsText, g.FontFace, g.Width/2-creditsTextW, g.Height-creditsTextH, color.White)
+		titleText := "Lunar Defence"
+		titleTextF, _ := font.BoundString(g.FontFace, titleText)
+		titleTextW := (titleTextF.Max.X - titleTextF.Min.X).Ceil() / 2
+		titleTextH := (titleTextF.Max.Y - titleTextF.Min.Y).Ceil() * 2
+		text.Draw(screen, titleText, g.FontFace, g.Width/2-titleTextW, g.Height-titleTextH*2, color.White)
 	}
 
 	// Draw game objects
