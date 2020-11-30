@@ -75,7 +75,6 @@
          cx="80.508926"
          cy="147.78868"
          r="35.151787"
-         inkscape:export-filename="/Users/sion/moon.png"
          inkscape:export-xdpi="30.145876"
          inkscape:export-ydpi="30.145876" />
       <circle
@@ -106,7 +105,6 @@
     <g
        id="g890"
        transform="translate(23.649987,-26.624115)"
-       inkscape:export-filename="/Users/sion/earth.png"
        inkscape:export-xdpi="30"
        inkscape:export-ydpi="30">
       <circle
@@ -115,7 +113,6 @@
          cx="-64.618004"
          cy="7.299634"
          r="140.60797"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
       <path
@@ -123,7 +120,6 @@
          style="fill:#8fc53f;fill-opacity:1;stroke:#32903a;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m -648.10547,137.3457 a 386.89878,386.89878 0 0 0 -112.24805,16.85742 531.4317,531.4317 0 0 0 498.32032,404.51954 386.89878,386.89878 0 0 0 1.53906,-34.47852 386.89878,386.89878 0 0 0 -386.89844,-386.89844 386.89878,386.89878 0 0 0 -0.71289,0 z"
          transform="scale(0.26458333)"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
       <path
@@ -131,7 +127,6 @@
          style="fill:#8fc53f;fill-opacity:1;stroke:#32903a;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="M 256.69531,-149.88281 A 386.89878,386.89878 0 0 0 143.07227,123.99805 386.89878,386.89878 0 0 0 197.87305,322.49414 531.4317,531.4317 0 0 0 287.20703,27.589844 531.4317,531.4317 0 0 0 256.69531,-149.88281 Z"
          transform="scale(0.26458333)"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
       <path
@@ -139,7 +134,6 @@
          style="fill:#8fc53f;fill-opacity:1;stroke:#32903a;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m -245.44141,-503.8418 a 531.4317,531.4317 0 0 0 -471.39062,288.40625 329.33381,326.41231 0 0 0 224.2793,87.39063 329.33381,326.41231 0 0 0 329.33398,-326.41211 329.33381,326.41231 0 0 0 -2.95508,-43.62109 531.4317,531.4317 0 0 0 -78.05078,-5.76368 531.4317,531.4317 0 0 0 -1.2168,0 z"
          transform="scale(0.26458333)"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
       <ellipse
@@ -149,7 +143,6 @@
          cy="7.1296854"
          rx="43.747822"
          ry="43.747818"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
       <circle
@@ -158,7 +151,6 @@
          cx="-64.618004"
          cy="7.299634"
          r="140.60797"
-         inkscape:export-filename="/Users/sion/earth.png"
          inkscape:export-xdpi="96"
          inkscape:export-ydpi="96" />
     </g>
@@ -169,7 +161,6 @@
          style="fill:#ba6939;fill-opacity:1;stroke:#4f322f;stroke-width:11.3386;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          d="m -335.31836,629.32812 a 43.498172,43.498169 0 0 0 -16.69726,3.37891 20.062362,20.062369 0 0 1 0.80664,5.62891 20.062362,20.062369 0 0 1 -20.0625,20.0625 20.062362,20.062369 0 0 1 -4.76172,-0.57617 43.498172,43.498169 0 0 0 -2.67188,15.0039 43.498172,43.498169 0 0 0 15.15625,32.9961 20.062411,20.062397 77.605092 0 1 9.54883,-5.08399 20.062411,20.062397 77.605092 0 1 23.90039,15.28516 43.498172,43.498169 0 0 0 38.39063,-43.19727 43.498172,43.498169 0 0 0 -2.91407,-15.65039 26.514564,26.764303 56.873156 0 1 -20.60156,-11.91601 26.514564,26.764303 56.873156 0 1 -4.23828,-12.98047 43.498172,43.498169 0 0 0 -15.74414,-2.95118 43.498172,43.498169 0 0 0 -0.11133,0 z"
          transform="scale(0.26458333)"
-         inkscape:export-filename="/Users/sion/asteroid.png"
          inkscape:export-xdpi="30"
          inkscape:export-ydpi="30" />
       <ellipse
@@ -179,13 +170,11 @@
          cy="177.47375"
          rx="4.4730163"
          ry="4.4730177"
-         inkscape:export-filename="/Users/sion/asteroid.png"
          inkscape:export-xdpi="30"
          inkscape:export-ydpi="30" />
     </g>
     <g
        id="g922"
-       inkscape:export-filename="/Users/sion/crosshair.png"
        inkscape:export-xdpi="30"
        inkscape:export-ydpi="30">
       <circle
@@ -194,7 +183,6 @@
          cx="1.9957114"
          cy="298.21646"
          r="35.151787"
-         inkscape:export-filename="/Users/sion/moon.png"
          inkscape:export-xdpi="30.145876"
          inkscape:export-ydpi="30.145876" />
       <path

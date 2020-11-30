@@ -1,3 +1,7 @@
+// Copyright 2020 Siôn le Roux.  All rights reserved.
+// Use of this source code is subject to an MIT-style
+// licence which can be found in the LICENSE file.
+
 package main
 
 import (
@@ -11,8 +15,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	_ "github.com/jatekalkotok/lunar-defence/statik"
 	"github.com/rakyll/statik/fs"
+	_ "github.com/sinisterstuf/lunar-defence/statik"
 )
 
 // An Object is something that can be seen and positioned in the game

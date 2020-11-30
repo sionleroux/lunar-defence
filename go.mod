@@ -1,4 +1,4 @@
-module github.com/jatekalkotok/lunar-defence
+module github.com/sinisterstuf/lunar-defence
 
 go 1.15
 

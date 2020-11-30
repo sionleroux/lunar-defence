@@ -1,3 +1,7 @@
+// Copyright 2020 Siôn le Roux.  All rights reserved.
+// Use of this source code is subject to an MIT-style
+// licence which can be found in the LICENSE file.
+
 //go:generate statik -src=./assets -include=*.png
 
 package main
