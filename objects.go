@@ -58,6 +58,7 @@ func NewObjectFromImage(img *ebiten.Image) *Object {
 // Moon is our moon, orbiting around the earth
 type Moon struct {
 	*Object
+	*Turret
 }
 
 // Update recalculates moon position
@@ -88,10 +89,43 @@ func (o Moon) Update(g *Game) {
 			g.Count--
 		}
 	}
+
+	o.Turret.Update(g)
 }
 
 // Draw renders a Moon to the screen
 func (o *Moon) Draw(screen *ebiten.Image) {
+	screen.DrawImage(o.Image, o.Op)
+	o.Turret.Draw(screen)
+}
+
+// A Turret is a weapon on the moon that shoots lasers
+type Turret struct {
+	*Object
+}
+
+// Update calculates Turrent game logic
+func (o *Turret) Update(g *Game) {
+	o.Center = g.Moon.Center
+
+	adjacent := float64(o.Center.X - g.Crosshair.Center.X)
+	opposite := float64(o.Center.Y - g.Crosshair.Center.Y)
+	angle := math.Atan2(opposite, adjacent)
+
+	o.Op.GeoM.Reset()
+
+	// Spin
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+	o.Op.GeoM.Rotate(angle)
+	o.Op.GeoM.Translate(o.Radius, o.Radius)
+
+	// Reposition
+	o.Op.GeoM.Translate(float64(o.Center.X), float64(o.Center.Y))
+	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
+}
+
+// Draw renders a Turret to the screen
+func (o *Turret) Draw(screen *ebiten.Image) {
 	screen.DrawImage(o.Image, o.Op)
 }
 

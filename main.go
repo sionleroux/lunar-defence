@@ -96,7 +96,12 @@ func NewGame(game *Game) {
 		Explosion: explosion,
 	}
 
-	game.Moon = &Moon{Object: NewObject("/moon.png")}
+	game.Moon = &Moon{
+		Object: NewObject("/moon.png"),
+		Turret: &Turret{
+			NewObject("/turret.png"),
+		},
+	}
 
 	gotext := NewObject("/gameover.png")
 	gotext.Op.GeoM.Translate(
