@@ -102,21 +102,25 @@ func (o *Moon) Draw(screen *ebiten.Image) {
 // A Turret is a weapon on the moon that shoots lasers
 type Turret struct {
 	*Object
+	Angle float64
 }
 
 // Update calculates Turrent game logic
 func (o *Turret) Update(g *Game) {
 	o.Center = g.Moon.Center
 
-	adjacent := float64(o.Center.X - g.Crosshair.Center.X)
-	opposite := float64(o.Center.Y - g.Crosshair.Center.Y)
-	angle := math.Atan2(opposite, adjacent)
+	// Calculate rotation towards crosshair if it's not cooling down
+	if !g.Crosshair.CoolingDown {
+		adjacent := float64(o.Center.X - g.Crosshair.Center.X)
+		opposite := float64(o.Center.Y - g.Crosshair.Center.Y)
+		o.Angle = math.Atan2(opposite, adjacent)
+	}
 
 	o.Op.GeoM.Reset()
 
 	// Spin
 	o.Op.GeoM.Translate(-o.Radius, -o.Radius)
-	o.Op.GeoM.Rotate(angle)
+	o.Op.GeoM.Rotate(o.Angle)
 	o.Op.GeoM.Translate(o.Radius, o.Radius)
 
 	// Reposition

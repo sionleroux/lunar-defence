@@ -99,7 +99,8 @@ func NewGame(game *Game) {
 	game.Moon = &Moon{
 		Object: NewObject("/moon.png"),
 		Turret: &Turret{
-			NewObject("/turret.png"),
+			Object: NewObject("/turret.png"),
+			Angle:  0,
 		},
 	}
 
