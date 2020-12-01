@@ -301,12 +301,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		creditsTextF, _ := font.BoundString(g.FontFace, creditsText)
 		creditsTextW := (creditsTextF.Max.X - creditsTextF.Min.X).Ceil() / 2
 		creditsTextH := (creditsTextF.Max.Y - creditsTextF.Min.Y).Ceil() * 2
-		text.Draw(screen, creditsText, g.FontFace, g.Width/2-creditsTextW, g.Height-creditsTextH, color.White)
+		text.Draw(screen, creditsText, g.FontFace, g.Width/2-creditsTextW, g.Height-creditsTextH*2, color.White)
+		musicText := "Music: The Water & the Well - Nihilore"
+		musicTextF, _ := font.BoundString(g.FontFace, musicText)
+		musicTextW := (musicTextF.Max.X - musicTextF.Min.X).Ceil() / 2
+		musicTextH := (musicTextF.Max.Y - musicTextF.Min.Y).Ceil() * 2
+		text.Draw(screen, musicText, g.FontFace, g.Width/2-musicTextW, g.Height-musicTextH, color.White)
 		titleText := "Lunar Defence"
 		titleTextF, _ := font.BoundString(g.FontFace, titleText)
 		titleTextW := (titleTextF.Max.X - titleTextF.Min.X).Ceil() / 2
 		titleTextH := (titleTextF.Max.Y - titleTextF.Min.Y).Ceil() * 2
-		text.Draw(screen, titleText, g.FontFace, g.Width/2-titleTextW, g.Height-titleTextH*2, color.White)
+		text.Draw(screen, titleText, g.FontFace, g.Width/2-titleTextW, g.Height-titleTextH*4, color.White)
 	}
 
 	// Draw game objects
@@ -395,16 +400,33 @@ type Sounds struct {
 func NewSounds() *Sounds {
 	sampleRate := 48000
 	audioConext := audio.NewContext(sampleRate)
+	music := loadSoundFile("/music-nihilore.ogg", audioConext)
+	musicLoop := audio.NewInfiniteLoop(music, music.Length())
+	musicPlayer, err := audio.NewPlayer(audioConext, musicLoop)
+	if err != nil {
+		log.Fatalf("error making music player: %v\n", err)
+	}
+	musicPlayer.SetVolume(0.5)
+	musicPlayer.Play()
 	return &Sounds{
 		Laser:     loadSound("/laser.ogg", audioConext),
 		ExplsnHi:  loadSound("/explsn-hi.ogg", audioConext),
 		ExplsnMid: loadSound("/explsn-mid.ogg", audioConext),
 		ExplsnLo:  loadSound("/explsn-lo.ogg", audioConext),
-		Music:     nil, // loadSound("/music.ogg", audioConext),
+		Music:     musicPlayer,
 	}
 }
 
 func loadSound(name string, context *audio.Context) *audio.Player {
+	music := loadSoundFile(name, context)
+	audioPlayer, err := audio.NewPlayer(context, music)
+	if err != nil {
+		log.Fatalf("error making audio player for %s: %v\n", name, err)
+	}
+	return audioPlayer
+}
+
+func loadSoundFile(name string, context *audio.Context) *vorbis.Stream {
 	statikFs, err := fs.New()
 	if err != nil {
 		log.Fatalf("error initialising statikFS: %v\n", err)
@@ -417,9 +439,5 @@ func loadSound(name string, context *audio.Context) *audio.Player {
 	if err != nil {
 		log.Fatalf("error decoding file %s as OGG: %v\n", name, err)
 	}
-	audioPlayer, err := audio.NewPlayer(context, music)
-	if err != nil {
-		log.Fatalf("error making audio player for %s: %v\n", name, err)
-	}
-	return audioPlayer
+	return music
 }

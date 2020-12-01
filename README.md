@@ -7,3 +7,5 @@ No need to stress, this is only a simulation.
 To build the game, run: `go build .`
 
 [![Build Status](https://travis-ci.org/sinisterstuf/lunar-defence.svg?branch=main)](https://travis-ci.org/sinisterstuf/lunar-defence)
+
+Game music: [The Water and the Well by Nihilore](https://freemusicarchive.org/music/Nihilore/Broken_Parts/Nihilore_-_Broken_Parts_-_04_The_Water_and_the_Well)
