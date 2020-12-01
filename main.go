@@ -21,6 +21,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/rakyll/statik/fs"
 	"golang.org/x/image/font"
@@ -191,6 +192,14 @@ func (g *Game) Update() error {
 	// Pressing Esc any time quits immediately
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("game quit by player")
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		if ebiten.IsFullscreen() {
+			ebiten.SetFullscreen(false)
+		} else {
+			ebiten.SetFullscreen(true)
+		}
 	}
 
 	// Skip updating while the game is loading
