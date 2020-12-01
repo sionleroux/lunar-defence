@@ -86,6 +86,8 @@ func (o Moon) Update(g *Game) {
 	for _, v := range g.Asteroids {
 		if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 			v.Explosion.Exploding = true
+			g.Sounds.ExplsnHi.Rewind()
+			g.Sounds.ExplsnHi.Play()
 			g.Count--
 		}
 	}
@@ -327,9 +329,17 @@ func (o *Crosshair) Update(g *Game) {
 		o.Missing = true
 		o.Shooting = true
 		o.ShootingFrom = g.Moon.Center
+		g.Sounds.Laser.Rewind()
+		g.Sounds.Laser.Play()
 		for _, v := range g.Asteroids {
 			if o.Overlaps(v.Object) && v.Alive && !v.Explosion.Exploding {
 				v.Explosion.Exploding = true
+				soundEffectDelay := time.NewTimer(time.Millisecond * 100)
+				go func() {
+					<-soundEffectDelay.C
+					g.Sounds.ExplsnMid.Rewind()
+					g.Sounds.ExplsnMid.Play()
+				}()
 				g.Count--
 				o.Missing = false
 			}

@@ -2,7 +2,7 @@
 // Use of this source code is subject to an MIT-style
 // licence which can be found in the LICENSE file.
 
-//go:generate statik -src=./assets -include=*.png
+//go:generate statik -src=./assets -include=*.png,*.ogg
 
 package main
 
@@ -18,8 +18,11 @@ import (
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/text"
+	"github.com/rakyll/statik/fs"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"gopkg.in/ini.v1"
@@ -66,6 +69,7 @@ func main() {
 		Crosshair:  nil,
 		GOText:     nil,
 		Entities:   nil,
+		Sounds:     nil,
 	}
 
 	go NewGame(game)
@@ -118,6 +122,8 @@ func NewGame(game *Game) {
 		game.Crosshair,
 	}
 	game.Entities = entities
+
+	game.Sounds = NewSounds()
 
 	game.Loading = false
 }
@@ -176,6 +182,7 @@ type Game struct {
 	Crosshair  *Crosshair
 	GOText     *Object
 	Entities   []Entity
+	Sounds     *Sounds
 }
 
 // Update calculates game logic
@@ -205,6 +212,8 @@ func (g *Game) Update() error {
 		} else if !g.GameOver {
 			g.GameOver = true
 			log.Println("game over")
+			g.Sounds.ExplsnLo.Rewind()
+			g.Sounds.ExplsnLo.Play()
 			g.Breathless = true
 			takeABreath := time.NewTimer(time.Second)
 			go func() {
@@ -364,4 +373,44 @@ func loadFont() font.Face {
 		log.Fatal(err)
 	}
 	return fontface
+}
+
+type Sounds struct {
+	Laser     *audio.Player
+	ExplsnHi  *audio.Player
+	ExplsnMid *audio.Player
+	ExplsnLo  *audio.Player
+	Music     *audio.Player
+}
+
+func NewSounds() *Sounds {
+	sampleRate := 48000
+	audioConext := audio.NewContext(sampleRate)
+	return &Sounds{
+		Laser:     loadSound("/laser.ogg", audioConext),
+		ExplsnHi:  loadSound("/explsn-hi.ogg", audioConext),
+		ExplsnMid: loadSound("/explsn-mid.ogg", audioConext),
+		ExplsnLo:  loadSound("/explsn-lo.ogg", audioConext),
+		Music:     nil, // loadSound("/music.ogg", audioConext),
+	}
+}
+
+func loadSound(name string, context *audio.Context) *audio.Player {
+	statikFs, err := fs.New()
+	if err != nil {
+		log.Fatalf("error initialising statikFS: %v\n", err)
+	}
+	file, err := statikFs.Open(name)
+	if err != nil {
+		log.Fatalf("error opening file %s: %v\n", name, err)
+	}
+	music, err := vorbis.Decode(context, file)
+	if err != nil {
+		log.Fatalf("error decoding file %s as OGG: %v\n", name, err)
+	}
+	audioPlayer, err := audio.NewPlayer(context, music)
+	if err != nil {
+		log.Fatalf("error making audio player for %s: %v\n", name, err)
+	}
+	return audioPlayer
 }
