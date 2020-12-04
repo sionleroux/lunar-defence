@@ -11,3 +11,4 @@ Game music: [The Water and the Well by Nihilore](https://freemusicarchive.org/mu
 ---
 
 [![Build Status](https://travis-ci.com/sinisterstuf/lunar-defence.svg?branch=main)](https://travis-ci.com/sinisterstuf/lunar-defence)
+[![Go Report Card](https://goreportcard.com/badge/github.com/sinisterstuf/lunar-defence)](https://goreportcard.com/report/github.com/sinisterstuf/lunar-defence)
