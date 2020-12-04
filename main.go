@@ -124,8 +124,6 @@ func NewGame(game *Game) {
 	}
 	game.Entities = entities
 
-	game.Sounds = NewSounds()
-
 	game.Loading = false
 }
 
@@ -259,6 +257,7 @@ func (g *Game) Update() error {
 	// On wave zero, click to start the game
 	if g.Wave == 0 && clicked() {
 		g.Wave++
+		g.Sounds = NewSounds()
 		g.Restart()
 	}
 
