@@ -1,5 +1,7 @@
 language: go
 go: 1.13
+services:
+  - xvfb
 before_install: sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev
 script:
   - |
@@ -8,4 +10,4 @@ script:
     cd -
     go generate
     go build .
-    go test .
+    xvfb-run -a go test .
