@@ -1,8 +1,17 @@
+os:
+  - osx
+  - linux
+  - windows
 language: go
 go: 1.13
-services:
-  - xvfb
-before_install: sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev
+jobs:
+  include:
+    - os: linux
+      services:
+        - xvfb
+before_install:
+  - |
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev; fi
 script:
   - |
     cd /
@@ -10,4 +19,5 @@ script:
     cd -
     go generate
     go build .
-    xvfb-run -a go test .
+    if [ "$TRAVIS_OS_NAME" = "linux" ]; then xvfb-run -a go test .; fi
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then go test ./statik; fi
