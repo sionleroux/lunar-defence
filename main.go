@@ -398,9 +398,9 @@ type Sounds struct {
 }
 
 func NewSounds() *Sounds {
-	sampleRate := 48000
+	sampleRate := 44100
 	audioConext := audio.NewContext(sampleRate)
-	music := loadSoundFile("/music-nihilore.ogg", audioConext)
+	music := loadSoundFile("/music.ogg", audioConext)
 	musicLoop := audio.NewInfiniteLoop(music, music.Length())
 	musicPlayer, err := audio.NewPlayer(audioConext, musicLoop)
 	if err != nil {
