@@ -1,6 +1,6 @@
+os: osx
 language: go
 go: 1.13
-before_install: sudo apt-get -y install libgl1-mesa-dev xorg-dev
 script:
   - |
     cd /
