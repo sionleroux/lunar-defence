@@ -3,7 +3,7 @@ os:
   - linux
   - windows
 language: go
-go: 1.13
+go: 1.15
 jobs:
   include:
     - os: linux
