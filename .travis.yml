@@ -1,16 +1,13 @@
 os:
   - osx
-  - linux
-    services:
-      - xvfb
   - windows
 language: go
 go: 1.15
-# jobs:
-#   include:
-#     - os: linux
-#       services:
-#         - xvfb
+jobs:
+  include:
+    - os: linux
+      services:
+        - xvfb
 before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev; fi
