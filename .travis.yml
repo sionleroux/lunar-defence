@@ -1,9 +1,9 @@
 os:
   - osx
   - linux
-    services:
-      - xvfb
   - windows
+services:
+  - xvfb
 language: go
 go: 1.15
 # jobs:
