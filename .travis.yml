@@ -3,7 +3,7 @@ os:
   - linux
   - windows
 language: go
-go: 1.15
+go: 1.16
 jobs:
   include:
     - os: linux
@@ -14,10 +14,6 @@ before_install:
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get -y install libgl1-mesa-dev xorg-dev libasound2-dev; fi
 script:
   - |
-    cd /
-    go get github.com/rakyll/statik
-    cd -
-    go generate
     go build .
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then xvfb-run -a go test .; fi
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then go test ./statik; fi
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then go test .; fi

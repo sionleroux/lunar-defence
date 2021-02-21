@@ -3,7 +3,7 @@ package main
 import "testing"
 
 func TestOverlaps(t *testing.T) {
-	object := NewObject("/asteroid.png")
+	object := NewObject("assets/asteroid.png")
 	if object == nil {
 		t.Logf("could't even make an object...")
 	}

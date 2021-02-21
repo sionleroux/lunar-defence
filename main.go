@@ -2,11 +2,11 @@
 // Use of this source code is subject to an MIT-style
 // licence which can be found in the LICENSE file.
 
-//go:generate statik -src=./assets -include=*.png,*.ogg
-
 package main
 
 import (
+	"bytes"
+	"embed"
 	"errors"
 	"fmt"
 	"image"
@@ -23,7 +23,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
-	"github.com/rakyll/statik/fs"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 	"gopkg.in/ini.v1"
@@ -40,6 +39,9 @@ var (
 	MoonOrbitDistance  float64 = 5
 	AsteroidSpinRatio  float64 = 3
 )
+
+//go:embed assets/*.png assets/*.ogg
+var assets embed.FS
 
 func main() {
 	ebiten.SetWindowSize(640, 480)
@@ -83,33 +85,33 @@ func main() {
 // NewGame sets up a new game object with default states and game objects
 func NewGame(game *Game) {
 	earth := &Earth{
-		Object:   NewObject(("/earth.png")),
+		Object:   NewObject(("assets/earth.png")),
 		Center:   image.Point{game.Width / 2, game.Height / 2},
 		Impacted: false,
 	}
 	game.Earth = earth
 
 	explosion := &Explosion{
-		Object:    NewObjectFromImage(loadImage("/explosion.png")),
+		Object:    NewObjectFromImage(loadImage("assets/explosion.png")),
 		Frame:     1,
 		Exploding: false,
 		Done:      false,
 	}
 	explosion.Radius = float64(explosion.Image.Bounds().Dy() / 2)
 	game.Crosshair = &Crosshair{
-		Object:    NewObject(("/crosshair.png")),
+		Object:    NewObject(("assets/crosshair.png")),
 		Explosion: explosion,
 	}
 
 	game.Moon = &Moon{
-		Object: NewObject("/moon.png"),
+		Object: NewObject("assets/moon.png"),
 		Turret: &Turret{
-			Object: NewObject("/turret.png"),
+			Object: NewObject("assets/turret.png"),
 			Angle:  0,
 		},
 	}
 
-	gotext := NewObject("/gameover.png")
+	gotext := NewObject("assets/gameover.png")
 	gotext.Op.GeoM.Translate(
 		float64(game.Width/2-gotext.Image.Bounds().Dx()/2),
 		float64(game.Height/2-gotext.Image.Bounds().Dy()/2),
@@ -130,8 +132,8 @@ func NewGame(game *Game) {
 // NewAsteroids makes a fresh set of asteroids
 func NewAsteroids(earthRadius float64, howMany int) Asteroids {
 	asteroids := make(Asteroids, 0, howMany)
-	asteroidImage := loadImage("/asteroid.png")
-	explosionImage := loadImage("/explosion.png")
+	asteroidImage := loadImage("assets/asteroid.png")
+	explosionImage := loadImage("assets/explosion.png")
 	for i := 0; i < howMany; i++ {
 		explosion := &Explosion{
 			Object:    NewObjectFromImage(explosionImage),
@@ -399,7 +401,7 @@ type Sounds struct {
 func NewSounds() *Sounds {
 	sampleRate := 44100
 	audioConext := audio.NewContext(sampleRate)
-	music := loadSoundFile("/music.ogg", audioConext)
+	music := loadSoundFile("assets/music.ogg", audioConext)
 	musicLoop := audio.NewInfiniteLoop(music, music.Length())
 	musicPlayer, err := audio.NewPlayer(audioConext, musicLoop)
 	if err != nil {
@@ -408,10 +410,10 @@ func NewSounds() *Sounds {
 	musicPlayer.SetVolume(0.5)
 	musicPlayer.Play()
 	return &Sounds{
-		Laser:     loadSound("/laser.ogg", audioConext),
-		ExplsnHi:  loadSound("/explsn-hi.ogg", audioConext),
-		ExplsnMid: loadSound("/explsn-mid.ogg", audioConext),
-		ExplsnLo:  loadSound("/explsn-lo.ogg", audioConext),
+		Laser:     loadSound("assets/laser.ogg", audioConext),
+		ExplsnHi:  loadSound("assets/explsn-hi.ogg", audioConext),
+		ExplsnMid: loadSound("assets/explsn-mid.ogg", audioConext),
+		ExplsnLo:  loadSound("assets/explsn-lo.ogg", audioConext),
 		Music:     musicPlayer,
 	}
 }
@@ -426,14 +428,11 @@ func loadSound(name string, context *audio.Context) *audio.Player {
 }
 
 func loadSoundFile(name string, context *audio.Context) *vorbis.Stream {
-	statikFs, err := fs.New()
-	if err != nil {
-		log.Fatalf("error initialising statikFS: %v\n", err)
-	}
-	file, err := statikFs.Open(name)
+	fbytes, err := assets.ReadFile(name)
 	if err != nil {
 		log.Fatalf("error opening file %s: %v\n", name, err)
 	}
+	file := bytes.NewReader(fbytes)
 	music, err := vorbis.Decode(context, file)
 	if err != nil {
 		log.Fatalf("error decoding file %s as OGG: %v\n", name, err)

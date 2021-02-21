@@ -15,8 +15,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/rakyll/statik/fs"
-	_ "github.com/sinisterstuf/lunar-defence/statik"
 )
 
 // An Object is something that can be seen and positioned in the game
@@ -38,7 +36,6 @@ func (o *Object) Overlaps(p *Object) bool {
 }
 
 // NewObject makes a new game Object with fields calculated from the input image
-// after laoding it from the statikFS
 func NewObject(filename string) *Object {
 	img := loadImage(filename)
 	return NewObjectFromImage(img)
@@ -382,16 +379,11 @@ func clicked() bool {
 	return inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft)
 }
 
-// Load an image from statikFS into an ebiten Image object
+// Load an image from embedded FS into an ebiten Image object
 func loadImage(name string) *ebiten.Image {
 	log.Printf("loading %s\n", name)
 
-	statikFs, err := fs.New()
-	if err != nil {
-		log.Fatalf("error initialising statikFS: %v\n", err)
-	}
-
-	file, err := statikFs.Open(name)
+	file, err := assets.Open(name)
 	if err != nil {
 		log.Fatalf("error opening file %s: %v\n", name, err)
 	}
