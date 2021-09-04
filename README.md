@@ -4,6 +4,8 @@ In the year 2030 we have lost the ozone layer due to carbon dioxide pollution an
 
 No need to stress, this is only a simulation.
 
+You can play the game online in your browser at: https://sinisterstuf.itch.io/lunar-defence
+
 To build the game, run: `go build .`
 
 Game music: [The Water and the Well by Nihilore](https://freemusicarchive.org/music/Nihilore/Broken_Parts/Nihilore_-_Broken_Parts_-_04_The_Water_and_the_Well)
