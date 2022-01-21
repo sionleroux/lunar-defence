@@ -46,6 +46,7 @@ var assets embed.FS
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Lunar Defence")
+	ebiten.SetWindowIcon([]image.Image{loadImage("assets/icon.png")})
 	ebiten.SetCursorMode(ebiten.CursorModeHidden)
 
 	applyConfigs()
