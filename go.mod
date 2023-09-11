@@ -1,6 +1,6 @@
 module github.com/sinisterstuf/lunar-defence
 
-go 1.16
+go 1.21
 
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.5.9
